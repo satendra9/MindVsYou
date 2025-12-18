@@ -1,6 +1,6 @@
 const Testimonials = () => {
     return (
-<>Testimonials</>
+<>Blogs</>
     )
 }
 export default Testimonials;
