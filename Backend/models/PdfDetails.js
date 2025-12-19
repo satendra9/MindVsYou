@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const PdfDetailsSchema = new mongoose.Schema({
-    pdf: String,
-    title: String,
-    section: String 
+    pdfUrl: String,
+    publicId: String,
+    section: String,
 },
     {collection:"PDF Details"}
 )

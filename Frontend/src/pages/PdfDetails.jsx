@@ -72,9 +72,9 @@ const PdfDetails = () => {
   };
 
   // Open PDF
-  const showPdf = (pdfName) => {
-    window.open(`https://mindvsyou-1.onrender.com/files/${pdfName}`, "_blank");
-  };
+  const showPdf = (pdfUrl) => {
+  window.open(pdfUrl, "_blank");
+};
 
   // Delete PDF
   const deletePdf = async (pdfId) => {
@@ -195,7 +195,8 @@ const PdfDetails = () => {
 )}
       <button
         className="bg-green-600 text-white px-3 py-2"
-        onClick={() => showPdf(pdf.pdf)}
+        onClick={() => showPdf(pdf.pdfUrl)}
+
       >
     View
     </button>

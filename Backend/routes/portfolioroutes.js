@@ -5,6 +5,8 @@ import multer from "multer";
 import { PdfDetails } from "../models/PdfDetails.js";
 import fs from "fs";
 import path from "path";
+import cloudinary from "../cloudinary.js"
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 import { fileURLToPath } from "url";
 
@@ -60,39 +62,47 @@ router.post("/contactdata", async (req, res) => {
 
 })
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../files"));  // your folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "mindvsyou_pdfs",
+    resource_type: "raw", // IMPORTANT for PDFs
+    format: async (req, file) => "pdf",
+    public_id: (req, file) =>
+      Date.now() + "-" + file.originalname.replace(/\s+/g, "_"),
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
+router.get("/", (req, res) => {
+  res.send("Backend is running successfully!");
+});
 
 router.post("/upload-files", upload.single("file"), async (req, res) => {
-      console.log(req.file);
-      const  title = req.body.title;
-      const fileName = req.file.filename;
-      try{
-        await PdfDetails.create({title: title, pdf: fileName, section: req.body.section});
-        res.send({status: "ok"});
-      }catch(error){
-        res.json({status: error});
-      }
+  try {
+    const { title, section } = req.body;
 
-})
-
-router.get("/get-pdfs/:sectionId", async(req, res) => {
-  try{
-    const sectionId = req.params.sectionId;
-    PdfDetails.find({ section: sectionId }).then((data) => {
-      res.send({status: "ok", data: data});
+    await PdfDetails.create({
+      title,
+      pdfUrl: req.file.path,       // Cloudinary URL
+      publicId: req.file.filename, // Cloudinary public_id
+      section,
     });
-  }catch(error){
-    res.json({status: error});
+
+    res.json({ status: "ok" });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+
+router.get("/get-pdfs/:sectionId", async (req, res) => {
+  try {
+    const data = await PdfDetails.find({ section: req.params.sectionId });
+    res.json({ status: "ok", data });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 });
 
@@ -103,17 +113,13 @@ router.delete("/delete-pdf/:id", async (req, res) => {
     const record = await PdfDetails.findById(req.params.id);
     if (!record) return res.status(404).json({ message: "PDF not found" });
 
-    // full path to actual file
-    const filePath = path.join(__dirname, "../files", record.pdf);
-
-    fs.unlink(filePath, (err) => {
-      if (err) console.log("File not found:", err);
+    await cloudinary.uploader.destroy(record.publicId, {
+      resource_type: "raw",
     });
 
     await PdfDetails.findByIdAndDelete(req.params.id);
 
     res.json({ message: "PDF deleted successfully" });
-
   } catch (error) {
     res.status(500).json({ error });
   }
