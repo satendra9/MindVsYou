@@ -2,7 +2,6 @@ import express from "express";
 import { Email } from "../models/EmailsignupRoute.js";
 import { Contact } from "../models/ContactRoute.js";
 import multer from "multer";
-import { PdfDetails } from "../models/PdfDetails.js";
 import fs from "fs";
 import path from "path";
 import cloudinary from "../cloudinary.js"
@@ -61,98 +60,6 @@ router.post("/contactdata", async (req, res) => {
   }
 
 })
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "mindvsyou_pdfs",
-    resource_type: "raw",
-    access_mode: "public",   // ✅ THIS FIXES 401
-    public_id: (req, file) =>
-      Date.now() + "-" + file.originalname.replace(/\s+/g, "_"),
-  },
-});
-
-const upload = multer({ storage });
-
-// Upload PDF route
-router.post("/upload-files", upload.single("file"), async (req, res) => {
-  try {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file?.path);
-
-    const { title, section } = req.body;
-
-    if (!title || !section || !req.file) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    const savedPdf = await PdfDetails.create({
-      title,
-      pdfUrl: req.file.path,
-      publicId: req.file.filename,
-      section,
-    });
-
-    console.log("SAVED:", savedPdf._id);
-
-    res.status(201).json({ status: "ok", data: savedPdf });
-  } catch (err) {
-    console.error("SAVE ERROR:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-// Get PDFs by section
-router.get("/get-pdfs/:sectionId", async (req, res) => {
-  try {
-    const data = await PdfDetails.find({ section: req.params.sectionId });
-    res.json({ status: "ok", data });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error });
-  }
-});
-
-// Delete PDF
-router.delete("/delete-pdf/:id", async (req, res) => {
-  try {
-    const record = await PdfDetails.findById(req.params.id);
-    if (!record) return res.status(404).json({ message: "PDF not found" });
-
-    await cloudinary.uploader.destroy(record.publicId, {
-      resource_type: "raw",
-    });
-
-    await PdfDetails.findByIdAndDelete(req.params.id);
-
-    res.json({ message: "PDF deleted successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error });
-  }
-});
-
-// Update PDF title
-router.put("/edit-pdf/:id", async (req, res) => {
-  try {
-    const { title } = req.body;
-
-    const updated = await PdfDetails.findByIdAndUpdate(
-      req.params.id,
-      { title },
-      { new: true }
-    );
-
-    if (!updated) return res.status(404).json({ message: "PDF not found" });
-
-    res.json({ status: "ok", message: "Title updated", data: updated });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error });
-  }
-});
-
-
 
 
 

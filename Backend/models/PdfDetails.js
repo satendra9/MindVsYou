@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-const PdfDetailsSchema = new mongoose.Schema(
+const pdfSchema = new mongoose.Schema(
   {
-    title: { type: String, default: "Untitled PDF" },
+    title: { type: String, required: true },
     pdfUrl: { type: String, required: true },
     publicId: { type: String, required: true },
-    section: { type: String, required: true },
   },
+  { timestamps: true }
 );
 
-export const PdfDetails = mongoose.model("PdfDetails", PdfDetailsSchema);
+export default mongoose.model("Pdf", pdfSchema);
