@@ -8,11 +8,11 @@ import Testimonials from "./pages/Testimonials.jsx";
 import EmailSuccess from "./pages/EmailSuccess.jsx";
 import ContactSuccess from "./pages/ContactSuccess.jsx";
 import Contact from "./pages/Contact.jsx";  
+import UploadPdf from "./pages/UploadPdf";
+import PdfList from "./pages/PdfList";
+import ViewPdf from "./pages/ViewPdf";
+import EditPdf from "./pages/EditPdf";
 import "./App.css";
-import PdfDetails from "./pages/PdfDetails.jsx";
-import Pdflist from "./pages/Pdflist.jsx";
-import Chatbot from "./pages/Chatbot.jsx";
-import Math8chapters from "./pages/Math8chapters.jsx";
 
 function App() {
 
@@ -28,10 +28,10 @@ function App() {
     <Route path = "/record/contactsuccess" element = {<ContactSuccess />} />
     <Route path = "/record/emailsuccess" element = {<EmailSuccess />} />
     <Route path = "/record/policy" element = {<PrivacyPolicy />} />
-    <Route path="/record/pdfdetails/:id" element={<PdfDetails />} />
-    <Route path = "/record/pdflist" element = {<Pdflist />} />
-    <Route path = "/record/chatbot" element = {<Chatbot />} />
-    <Route path = "/record/Math8chapters" element = {<Math8chapters />} />
+    <Route path="/record/uploadpdf" element={<UploadPdf />} />
+    <Route path="record/pdfs" element={<PdfList />} />
+    <Route path="record/view/:id" element={<ViewPdf />} />
+    <Route path="record/edit/:id" element={<EditPdf />} />
     
   </Routes>
  

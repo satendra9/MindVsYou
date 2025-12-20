@@ -1,5 +1,5 @@
-import { configDotenv } from "dotenv";
-configDotenv();
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import { PORT, MONGO_URL } from "./config.js";

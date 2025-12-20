@@ -3,6 +3,10 @@ import { Email } from "../models/EmailsignupRoute.js";
 import { Contact } from "../models/ContactRoute.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import Pdf from "../models/Pdf.js";
+import cloudinary from "../cloudinary.js";
+import upload from "../multer.js"
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +61,54 @@ router.post("/contactdata", async (req, res) => {
 })
 
 
+
+
+router.post("/upload", upload.single("pdf"), async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "raw",
+      folder: "pdfs",
+    });
+
+    const pdf = await Pdf.create({
+      title: req.body.title,
+      pdfUrl: result.secure_url,
+      publicId: result.public_id,
+    });
+
+    res.status(201).json(pdf);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* 🔹 Get All PDFs */
+router.get("/", async (req, res) => {
+  const pdfs = await Pdf.find().sort({ createdAt: -1 });
+  res.json(pdfs);
+});
+
+/* 🔹 Update PDF Title */
+router.put("/:id", async (req, res) => {
+  const updated = await Pdf.findByIdAndUpdate(
+    req.params.id,
+    { title: req.body.title },
+    { new: true }
+  );
+  res.json(updated);
+});
+
+/* 🔹 Delete PDF */
+router.delete("/:id", async (req, res) => {
+  const pdf = await Pdf.findById(req.params.id);
+
+  await cloudinary.uploader.destroy(pdf.publicId, {
+    resource_type: "raw",
+  });
+
+  await pdf.deleteOne();
+  res.json({ message: "PDF deleted" });
+});
 
  
 
