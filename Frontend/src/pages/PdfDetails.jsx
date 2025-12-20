@@ -152,65 +152,30 @@ const PdfDetails = () => {
         </button>
       </form>
 
-      {/* SHOW PDFs */}
-      <h2 className="text-xl font-bold mb-4">{sectionNames[id] || "Section"}</h2>
-
       {pdfs.length === 0 ? (
-        <p>No PDFs uploaded in this section.</p>
-      ) : (
-        pdfs.map((pdf) => (
-          <div
-            key={pdf._id}
-            className="flex justify-between items-center p-3 bg-gray-100 border rounded mb-2"
-          >
-            {editingId === pdf._id ? (
-  <input
-    type="text"
-    value={newTitle}
-    onChange={(e) => setNewTitle(e.target.value)}
-    className="border p-2 rounded"
-  />
+  <p>No PDFs uploaded in this section.</p>
 ) : (
-  <h6 className="text-gray-800 font-medium">{pdf.title}</h6>
+  pdfs.map((pdf) => (
+    <div key={pdf._id} className="flex justify-between items-center p-3 bg-gray-100 border rounded mb-2">
+      <h6 className="text-gray-800 font-medium">{pdf.title}</h6>
+      <div className="space-x-4">
+        <button
+          className="bg-green-600 text-white px-3 py-2"
+          onClick={() => showPdf(pdf.pdfUrl)}
+        >
+          View
+        </button>
+        <button
+          className="bg-red-600 text-white px-3 py-2"
+          onClick={() => deletePdf(pdf._id)}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  ))
 )}
 
-            <div className="space-x-4">
-              {editingId === pdf._id ? (
-    <button
-    className="px-3 py-2 bg-blue-600 text-white rounded-lg space-x-2"
-    onClick={() => editPdfName(pdf._id)}
-  >
-    Save
-  </button>
-) : (
-    <button
-    className="px-3 py-2 bg-yellow-600 text-white rounded-lg"
-    onClick={() => {
-      setEditingId(pdf._id);
-      setNewTitle(pdf.title);
-    }}
-  >
-    Edit
-    </button>
-)}
-      <button
-        className="bg-green-600 text-white px-3 py-2"
-        onClick={() => showPdf(pdf.pdfUrl)}
-
-      >
-    View
-    </button>
-
-      <button
-        className="bg-red-600 text-white px-3 py-2"
-        onClick={() => deletePdf(pdf._id)}
-      >
-    Delete
-      </button>
-        </div>
-        </div>
-        ))
-      )}
       </div>
       <div className="flex gap-40 mt-14 bg-linear-to-r from-gray-200 to-gray-300 h-96">
       <div className="ml-8 mt-14 text-black"><h1>MindVsYou</h1></div>
