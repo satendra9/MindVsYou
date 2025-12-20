@@ -8,10 +8,10 @@ import Testimonials from "./pages/Testimonials.jsx";
 import EmailSuccess from "./pages/EmailSuccess.jsx";
 import ContactSuccess from "./pages/ContactSuccess.jsx";
 import Contact from "./pages/Contact.jsx";  
-import UploadPdf from "./pages/UploadPdf";
-import PdfList from "./pages/PdfList";
-import ViewPdf from "./pages/ViewPdf";
-import EditPdf from "./pages/EditPdf";
+import UploadPdf from "./pages/Uploadpdf.jsx";
+import PdfList from "./pages/Pdflist.jsx";
+import ViewPdf from "./pages/Viewpdf.jsx";
+import EditPdf from "./pages/Editpdf.jsx";
 import "./App.css";
 
 function App() {
