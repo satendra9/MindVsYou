@@ -124,7 +124,35 @@ const PdfDetails = () => {
     </div>
     <div className="p-6 max-w-2xl mx-auto">
 
-      {pdfs.length === 0 ? (
+      {/* UPLOAD FORM */}
+      <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-lg">
+        <h2 className="text-xl font-bold mb-3">Upload PDF</h2>
+
+        <input
+          type="text"
+          placeholder="Enter Title"
+          className="border p-2 w-full mb-3"
+          required
+          onChange={(e) => setTitle(e.target.value)}
+        />
+
+        <input
+          type="file"
+          className="border p-2 w-full mb-3"
+          accept="application/pdf"
+          required
+          onChange={(e) => setFile(e.target.files[0])}
+        />
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 px-4 rounded"
+        >
+          Upload
+        </button>
+      </form>
+
+{pdfs.length === 0 ? (
   <p>No PDFs uploaded in this section.</p>
 ) : (
   pdfs.map((pdf) => (
