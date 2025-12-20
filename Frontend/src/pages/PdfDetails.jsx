@@ -124,44 +124,19 @@ const PdfDetails = () => {
     </div>
     <div className="p-6 max-w-2xl mx-auto">
 
-      {/* UPLOAD FORM */}
-      <form onSubmit={handleSubmit} className="mb-6 p-4 border rounded-lg">
-        <h2 className="text-xl font-bold mb-3">Upload PDF</h2>
-
-        <input
-          type="text"
-          placeholder="Enter Title"
-          className="border p-2 w-full mb-3"
-          required
-          onChange={(e) => setTitle(e.target.value)}
-        />
-
-        <input
-          type="file"
-          className="border p-2 w-full mb-3"
-          accept="application/pdf"
-          required
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded"
-        >
-          Upload
-        </button>
-      </form>
-
       {pdfs.length === 0 ? (
   <p>No PDFs uploaded in this section.</p>
 ) : (
   pdfs.map((pdf) => (
-    <div key={pdf._id} className="flex justify-between items-center p-3 bg-gray-100 border rounded mb-2">
+    <div
+      key={pdf._id}
+      className="flex justify-between items-center p-3 bg-gray-100 border rounded mb-2"
+    >
       <h6 className="text-gray-800 font-medium">{pdf.title}</h6>
       <div className="space-x-4">
         <button
           className="bg-green-600 text-white px-3 py-2"
-          onClick={() => showPdf(pdf.pdfUrl)}
+          onClick={() => window.open(pdf.pdfUrl, "_blank")}
         >
           View
         </button>
@@ -175,6 +150,7 @@ const PdfDetails = () => {
     </div>
   ))
 )}
+
 
       </div>
       <div className="flex gap-40 mt-14 bg-linear-to-r from-gray-200 to-gray-300 h-96">

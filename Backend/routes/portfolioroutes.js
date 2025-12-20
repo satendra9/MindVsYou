@@ -66,7 +66,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "mindvsyou_pdfs",
-    resource_type: "raw", // IMPORTANT for PDFs
+    resource_type: "raw", // important for PDFs
     format: async (req, file) => "pdf",
     public_id: (req, file) =>
       Date.now() + "-" + file.originalname.replace(/\s+/g, "_"),
@@ -75,39 +75,46 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
+// Root route
 router.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
 
+// Upload PDF
 router.post("/upload-files", upload.single("file"), async (req, res) => {
   try {
     const { title, section } = req.body;
 
+    // IMPORTANT: CloudinaryStorage already returns secure_url and filename
+    const pdfUrl = req.file.path;      // secure_url
+    const publicId = req.file.filename; // Cloudinary public_id
+
     await PdfDetails.create({
       title,
-      pdfUrl: req.file.path,       // Cloudinary URL
-      publicId: req.file.filename, // Cloudinary public_id
+      pdfUrl,
+      publicId,
       section,
     });
 
-    res.json({ status: "ok" });
+    res.json({ status: "ok", data: { title, pdfUrl, publicId } });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 });
 
-
+// Get PDFs by section
 router.get("/get-pdfs/:sectionId", async (req, res) => {
   try {
     const data = await PdfDetails.find({ section: req.params.sectionId });
     res.json({ status: "ok", data });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 });
 
-
-// DELETE PDF
+// Delete PDF
 router.delete("/delete-pdf/:id", async (req, res) => {
   try {
     const record = await PdfDetails.findById(req.params.id);
@@ -121,41 +128,30 @@ router.delete("/delete-pdf/:id", async (req, res) => {
 
     res.json({ message: "PDF deleted successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 });
 
-// UPDATE PDF TITLE
+// Update PDF title
 router.put("/edit-pdf/:id", async (req, res) => {
   try {
     const { title } = req.body;
 
     const updated = await PdfDetails.findByIdAndUpdate(
       req.params.id,
-      { title: title },
-      { new: true }  // return updated record
+      { title },
+      { new: true }
     );
 
-    if (!updated) {
-      return res.status(404).json({ message: "PDF not found" });
-    }
+    if (!updated) return res.status(404).json({ message: "PDF not found" });
 
-    res.json({
-      status: "ok",
-      message: "Title updated successfully",
-      data: updated
-    });
-
+    res.json({ status: "ok", message: "Title updated", data: updated });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
-})
-
-
-
-
-
-
+});
 
 
 
