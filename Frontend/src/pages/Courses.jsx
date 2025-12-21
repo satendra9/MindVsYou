@@ -15,7 +15,7 @@ const Courses = () => {
             email,
         }
         setLoading(true);
-        axios.post('https://mindvsyou-1.onrender.com/record/emailform',data).then(()=>{
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/record/emailform`,data).then(()=>{
             setLoading(false);
             navigate('/record/emailsuccess');
         }).catch((error)=>{

@@ -29,9 +29,9 @@ function App() {
     <Route path = "/record/emailsuccess" element = {<EmailSuccess />} />
     <Route path = "/record/policy" element = {<PrivacyPolicy />} />
     <Route path="/record/uploadpdf" element={<UploadPdf />} />
-    <Route path="record/pdfs" element={<PdfList />} />
-    <Route path="record/view/:id" element={<ViewPdf />} />
-    <Route path="record/edit/:id" element={<EditPdf />} />
+    <Route path="/record/pdfs" element={<PdfList />} />
+    <Route path="/record/pdfs/:id" element={<ViewPdf />} />
+    <Route path="/record/edit/:id" element={<EditPdf />} />
     
   </Routes>
  

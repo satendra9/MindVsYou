@@ -16,7 +16,7 @@ const Contact = () => {
                     email,
                 }
                 setLoading(true);
-                axios.post('https://mindvsyou-1.onrender.com/record/emailform',data).then(()=>{
+                axios.post(`${import.meta.env.VITE_API_BASE_URL}/record/emailform`,data).then(()=>{
                     setLoading(false);
                     navigate('/record/emailsuccess');
                 }).catch((error)=>{
@@ -35,7 +35,7 @@ const Contact = () => {
             message,
         }
         setLoading(true);
-        axios.post('https://mindvsyou-1.onrender.com/record/contactdata', data).then(()=>{
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/record/contactdata`, data).then(()=>{
             setLoading(false);
             navigate('/record/contactsuccess');
         }).catch((error)=>{

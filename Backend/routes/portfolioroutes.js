@@ -60,14 +60,19 @@ router.post("/contactdata", async (req, res) => {
 
 })
 
-
-
-
 router.post("/upload", upload.single("pdf"), async (req, res) => {
   try {
+    console.log("REQ BODY:", req.body);
+    console.log("REQ FILE:", req.file);
+
+    if (!req.file) {
+      return res.status(400).json({ message: "PDF file not received" });
+    }
+
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "raw",
       folder: "pdfs",
+      
     });
 
     const pdf = await Pdf.create({
@@ -77,19 +82,35 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     });
 
     res.status(201).json(pdf);
+    console.log("CLOUDINARY URL:", result.secure_url);
   } catch (err) {
+    console.error("UPLOAD ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 });
 
+/* 🔹 Get PDF by ID */
+router.get("/pdfs/:id", async (req, res) => {
+  try {
+    const pdf = await Pdf.findById(req.params.id);
+    if (!pdf) {
+      return res.status(404).json({ message: "PDF not found" });
+    }
+    res.json(pdf);
+  } catch (error) {
+    res.status(400).json({ message: "Invalid PDF ID" });
+  }
+});
+
+
 /* 🔹 Get All PDFs */
-router.get("/", async (req, res) => {
+router.get("/pdfs", async (req, res) => {
   const pdfs = await Pdf.find().sort({ createdAt: -1 });
   res.json(pdfs);
 });
 
 /* 🔹 Update PDF Title */
-router.put("/:id", async (req, res) => {
+router.put("/pdfs/:id", async (req, res) => {
   const updated = await Pdf.findByIdAndUpdate(
     req.params.id,
     { title: req.body.title },
@@ -98,8 +119,10 @@ router.put("/:id", async (req, res) => {
   res.json(updated);
 });
 
+
+
 /* 🔹 Delete PDF */
-router.delete("/:id", async (req, res) => {
+router.delete("/pdfs/:id", async (req, res) => {
   const pdf = await Pdf.findById(req.params.id);
 
   await cloudinary.uploader.destroy(pdf.publicId, {

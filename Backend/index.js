@@ -1,25 +1,23 @@
+import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
+import cloudinary from "./cloudinary.js";
 import mongoose from "mongoose";
 import { PORT, MONGO_URL } from "./config.js";
 import EmailRoute from "./routes/portfolioroutes.js"
 import cors from 'cors';
-import path from "path";
-import { fileURLToPath } from "url";
-console.log("PROCESS TEST:", typeof process);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 const app = express();
 
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
-
+app.use(cors({
+  origin: "http://localhost:5173"
+}));
 app.use("/record", EmailRoute);
-app.use("/files", express.static(path.join(__dirname, "files")));
 
 mongoose
   .connect(MONGO_URL)

@@ -6,13 +6,13 @@ export default function PdfList() {
   const [pdfs, setPdfs] = useState([]);
 
   const fetchPdfs = async () => {
-    const res = await axios.get("https://mindvsyou-1.onrender.com/record/pdfs");
+    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/record/pdfs`);
     setPdfs(res.data);
   };
 
   const deletePdf = async (id) => {
     if (!window.confirm("Delete this PDF?")) return;
-    await axios.delete(`https://mindvsyou-1.onrender.com/record/pdfs/${id}`);
+    await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${id}`);
     fetchPdfs();
   };
 
@@ -32,11 +32,11 @@ export default function PdfList() {
           <span>{pdf.title}</span>
 
           <div className="flex gap-4">
-            <Link to={`/view/${pdf._id}`} className="text-blue-600">
+            <Link to={`/record/pdfs/${pdf._id}`} className="text-blue-600">
               View
             </Link>
 
-            <Link to={`/edit/${pdf._id}`} className="text-green-600">
+            <Link to={`/record/edit/${pdf._id}`} className="text-green-600">
               Edit
             </Link>
 

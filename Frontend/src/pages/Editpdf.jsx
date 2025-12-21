@@ -8,7 +8,7 @@ export default function EditPdf() {
   const [title, setTitle] = useState("");
 
   useEffect(() => {
-    axios.get("https://mindvsyou-1.onrender.com/record/pdfs").then((res) => {
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/record/pdfs`).then((res) => {
       const pdf = res.data.find((p) => p._id === id);
       setTitle(pdf.title);
     });
@@ -16,8 +16,8 @@ export default function EditPdf() {
 
   const updateTitle = async (e) => {
     e.preventDefault();
-    await axios.put(`https://mindvsyou-1.onrender.com/record/pdfs/${id}`, { title });
-    navigate("/pdfs");
+    await axios.put(`${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${id}`, { title });
+    navigate("/record/pdfs");
   };
 
   return (
