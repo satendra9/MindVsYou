@@ -12,6 +12,7 @@ import UploadPdf from "./pages/Uploadpdf.jsx";
 import PdfList from "./pages/Pdflist.jsx";
 import ViewPdf from "./pages/Viewpdf.jsx";
 import EditPdf from "./pages/Editpdf.jsx";
+import PdfSection from "./pages/PdfSection.jsx";
 import "./App.css";
 
 function App() {
@@ -28,10 +29,10 @@ function App() {
     <Route path = "/record/contactsuccess" element = {<ContactSuccess />} />
     <Route path = "/record/emailsuccess" element = {<EmailSuccess />} />
     <Route path = "/record/policy" element = {<PrivacyPolicy />} />
-    <Route path="/record/uploadpdf" element={<UploadPdf />} />
-    <Route path="/record/pdfs" element={<PdfList />} />
     <Route path="/record/pdfs/:id" element={<ViewPdf />} />
     <Route path="/record/edit/:id" element={<EditPdf />} />
+    <Route path="/record/:section" element={<PdfSection />} />
+    <Route path="/record/:section/upload" element={<UploadPdf />} />
     
   </Routes>
  

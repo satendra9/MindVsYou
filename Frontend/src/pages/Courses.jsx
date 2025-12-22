@@ -25,18 +25,15 @@ const Courses = () => {
         })
       }
 
-  const cards = [
-  { id: 1, title: "Class 8th" },
-  { id: 2, title: "Class 9th" },
-  { id: 3, title: "Class 10th" },
-  { id: 4, title: "Class 11th" },
-  { id: 5, title: "Class 12th" },
-  { id: 6, title: "IIT JEE" },
-  { id: 7, title: "NEET" },
+  const sections = [
+  { slug: "class-8", title: "Class 8th" },
+  { slug: "class-9", title: "Class 9th" },
+  { slug: "class-10", title: "Class 10th" },
+  { slug: "class-11", title: "Class 11th" },
+  { slug: "class-12", title: "Class 12th" },
+  { slug: "iit-jee", title: "IIT JEE" },
+  { slug: "neet", title: "NEET" },
 ];
-
-const { id } = useParams();
-const card = cards.find((c) => c.id === Number(id));
 
 const sliderRef = useRef(null);
 
@@ -160,14 +157,14 @@ useEffect(() => {
         ref={sliderRef}
         className="flex space-x-4 overflow-x-auto scroll-smooth no-scrollbar "
       >
-        {cards.map((card) => (
+        {sections.map((section) => (
           <div
-            key={card.id}
+            key={section.slug}
             className="min-w-[250px] bg-gray-500 p-6 rounded-2xl mt-4 shadow-xl border animate-slide-left pause-hover border-black border-1"
           >
-            <h3 className="text-white font-semibold">{card.title}</h3>
+            <h3 className="text-white font-semibold">{section.title}</h3>
             <button className="bg-orange-500 hover:bg-orange-600 text-black px-2 py-2 rounded">
-              <Link to={`/record/pdfdetails/${card.id}`} className='text-black !no-underline'>STUDY MATERIAL</Link>
+              <Link to={`/record/${section.slug}`} className='text-black !no-underline'>STUDY MATERIAL</Link>
             </button>
           </div>
         ))}

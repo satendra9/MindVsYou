@@ -1,57 +1,56 @@
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-export default function UploadPdf() {
-    
+const UploadPdf = () => {
+  const { section } = useParams();
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
-  const uploadPdf = async (e) => {
+  const handleUpload = async (e) => {
     e.preventDefault();
 
+    if (!file) return alert("Please select a PDF");
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("pdf", file);
+    formData.append("pdf", file); // must match multer field name
 
-    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/record/upload`, formData,
-      {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  }
+    console.log("Uploading for section:", section); // ✅ debug
+
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/record/upload/${section}`,
+      formData
     );
-    alert("PDF Uploaded");
-    navigate("/record/pdfs");
+
+    alert("PDF uploaded");
+    navigate(`/record/${section}`);
     
   };
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-4">Upload PDF</h2>
+    <form onSubmit={handleUpload} className="p-6">
+      <h2 className="text-xl font-bold mb-4">Upload PDF for {section}</h2>
 
-      <form onSubmit={uploadPdf} className="space-y-4">
-        <input
-          type="text"
-          placeholder="PDF Title"
-          value={title}
-          className="border p-2 w-full"
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+      <input
+        className="border p-2 w-full mb-3"
+        placeholder="Title"
+        onChange={e => setTitle(e.target.value)}
+      />
 
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-          required
-        />
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={e => setFile(e.target.files[0])}
+      />
 
-        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">
-          Upload
-        </button>
-      </form>
-    </div>
+      <button className="bg-blue-600 text-white px-4 py-2 mt-4">
+        Upload
+      </button>
+    </form>
   );
-}
+};
+
+export default UploadPdf;

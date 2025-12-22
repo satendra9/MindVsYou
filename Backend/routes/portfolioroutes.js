@@ -60,18 +60,21 @@ router.post("/contactdata", async (req, res) => {
 
 })
 
-router.post("/upload", upload.single("pdf"), async (req, res) => {
+router.post("/upload/:section", upload.single("pdf"), async (req, res) => {
   try {
     console.log("REQ BODY:", req.body);
     console.log("REQ FILE:", req.file);
+    const {section} = req.params;
+    console.log("Uploading to section:", section);
 
     if (!req.file) {
       return res.status(400).json({ message: "PDF file not received" });
     }
 
+    const folderName = `pdfs/${section.replace(/\s+/g, "-").toLowerCase()}`;
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "raw",
-      folder: "pdfs",
+      folder: folderName,
       
     });
 
@@ -79,6 +82,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
       title: req.body.title,
       pdfUrl: result.secure_url,
       publicId: result.public_id,
+      section,
     });
 
     res.status(201).json(pdf);
@@ -89,16 +93,34 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
   }
 });
 
-/* 🔹 Get PDF by ID */
-router.get("/pdfs/:id", async (req, res) => {
+/* Get pdf by section */
+router.get("/pdfs/:section", async (req, res) => {
+  try {
+    const { section } = req.params;
+
+    const pdfs = await Pdf.find({ section });
+
+    res.json(pdfs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* delete pdf by section */
+router.delete("/pdfs/:id", async (req, res) => {
   try {
     const pdf = await Pdf.findById(req.params.id);
-    if (!pdf) {
-      return res.status(404).json({ message: "PDF not found" });
-    }
-    res.json(pdf);
-  } catch (error) {
-    res.status(400).json({ message: "Invalid PDF ID" });
+    if (!pdf) return res.status(404).json({ message: "PDF not found" });
+
+    await cloudinary.uploader.destroy(pdf.publicId, {
+      resource_type: "raw",
+    });
+
+    await Pdf.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "PDF deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -119,19 +141,6 @@ router.put("/pdfs/:id", async (req, res) => {
   res.json(updated);
 });
 
-
-
-/* 🔹 Delete PDF */
-router.delete("/pdfs/:id", async (req, res) => {
-  const pdf = await Pdf.findById(req.params.id);
-
-  await cloudinary.uploader.destroy(pdf.publicId, {
-    resource_type: "raw",
-  });
-
-  await pdf.deleteOne();
-  res.json({ message: "PDF deleted" });
-});
 
  
 
