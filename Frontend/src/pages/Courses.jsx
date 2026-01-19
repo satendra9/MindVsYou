@@ -1,80 +1,149 @@
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { Button, Image } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import isTeacher from "../../middleware/isTeacher.js";
 import { logout } from "../pages/logout.jsx";
+import SelectGoal from "./SelectGoal.jsx";
+import Footer from "./Footer.jsx";
 
 const Courses = () => {
-  
+  const [open, setOpen] = useState(false);
 
   return (
-  <>
-   <nav className="">
-  <div className="w-full bg-white border-1 border-gray-200 h-18 flex">
-    <div className="mt-1 ml-3">
-        <img src="/mindvsyou-logo.JPG" className="w-16 h-16" />
-      </div>
-     <div className="w-full mt-4 flex">
-      
-      <ul className="flex flex-wrap justify-center gap-3 sm:gap-6 text-white text-sm sm:text-base">
+    <>
+      {/* NAVBAR */}
+      <nav className="w-full bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <img
+                src="/mindvsyou-logo.JPG"
+                alt="Logo"
+                className="w-12 h-12 object-contain"
+              />
+            </div>
 
+            {/* Desktop Menu */}
+            <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
+              <li>
+                <Link to="/" className="text-black !no-underline">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/about" className="text-black !no-underline">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/contact" className="text-black !no-underline">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/policy" className="text-black !no-underline">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/blogs" className="text-black !no-underline">
+                  Blogs
+                </Link>
+              </li>
 
-        <li className="text-sm font-medium">
-          <Link to="/" className="text-black !no-underline">
-            Home
-          </Link>
-        </li >
-        <li className="text-sm font-medium">
-          <Link to="/record/about" className="text-black !no-underline">
-            About
-          </Link>
-        </li >
-        <li className="text-sm font-medium">
-          <Link to="/record/contact" className="text-black !no-underline">
-            Contact
-          </Link>
-        </li>
-        <li className="text-sm font-medium">
-          <Link to="/record/policy" className="text-black !no-underline">
-            Privacy Policy
-          </Link>
-        </li>
-        <li className="text-sm font-medium">
-          <Link to="/record/blogs" className="text-black !no-underline">
-            Blogs
-          </Link>
-        </li>
-        <li className="ml-156">
-          {isTeacher() ? (
+              <li>
+                {isTeacher() ? (
+                  <button
+                    onClick={logout}
+                    className="text-black font-semibold"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    to="/api/auth/teacher-login"
+                    className="border border-black rounded px-3 py-1.5 text-black !no-underline hover:bg-gray-100"
+                  >
+                    Teacher Login
+                  </Link>
+                )}
+              </li>
+            </ul>
+
+            {/* Mobile Menu Button */}
             <button
-              onClick={logout}
-              className="text-black font-semibold"
+              onClick={() => setOpen(!open)}
+              className="md:hidden text-gray-700"
             >
-              Logout
+              {open ? <X size={24} /> : <Menu size={24} />}
             </button>
-          ) : (
-            <Link
-              to="/api/auth/teacher-login"
-              className="text-black text-sm !no-underline border-1 border-black rounded px-2 py-2 font-medium hover:bg-gray-100 ml-24"
-            >
-              Teacher Login
-            </Link>
-          )}
-        </li>
-      </ul>
-    </div>
-  </div>
-  {/* HEIGHT CONTROLLER */}
-  <div className="min-h-[220px] sm:min-h-[260px] md:min-h-[320px] flex items-start pt-2">
-    
-    {/* CONTENT WRAPPER */}
-   
-  </div>
-</nav>
-      
-  </>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {open && (
+          <div className="md:hidden border-t border-gray-200 bg-white">
+            <ul className="flex flex-col px-4 py-4 gap-4 text-sm font-medium">
+              <li>
+                <Link onClick={() => setOpen(false)} to="/" className="text-black">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/about" className="text-black">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/contact" className="text-black">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/policy" className="text-black">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/blogs" className="text-black">
+                  Blogs
+                </Link>
+              </li>
+
+              <li>
+                {isTeacher() ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="text-black font-semibold text-left"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    to="/api/auth/teacher-login"
+                    className="border border-black rounded px-3 py-2 text-black w-fit"
+                  >
+                    Teacher Login
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
+        )}
+      </nav>
+
+      {/* PAGE CONTENT */}
+      <SelectGoal />
+
+      <Footer />
+    </>
   );
-}
+};
 
 export default Courses;
+

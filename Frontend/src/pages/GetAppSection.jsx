@@ -5,41 +5,46 @@ const GetAppSection = () => {
         
         {/* Left Content */}
         <div>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#3c4852]">
+          <p className="text-4xl md:text-5xl font-extrabold text-[#3c4852]">
             Get the learning <br /> app
-          </h2>
-
-          <p className="mt-4 text-gray-600 text-base max-w-md">
-            Download lessons and learn anytime, anywhere with the Unacademy app
           </p>
 
-          {/* Store Buttons */}
-          <div className="mt-8 flex flex-wrap gap-4">
-            <img
-              src="/app-store.png"
-              alt="Download on the App Store"
-              className="h-12 cursor-pointer"
-            />
-            <img
-              src="/google-play.png"
-              alt="Get it on Google Play"
-              className="h-12 cursor-pointer"
-            />
-          </div>
+          <p className="mt-4 text-gray-600 text-base max-w-md font-medium">
+            Download lessons and learn anytime, anywhere with the MindVsYou ChatBot App
+          </p>
+
+          <div className="mt-6 flex gap-3">
+  <button
+    className="
+      flex items-center gap-2
+      bg-gradient-to-r from-purple-400 to-purple-500
+      hover:from-purple-500 hover:to-purple-600
+      text-white font-semibold
+      px-7 py-3
+      rounded-full
+      shadow-lg shadow-purple-300/40
+      transition-all duration-300
+      hover:scale-105
+      active:scale-95
+      rounded
+    "
+  >
+    🤖 Go to MindVsYou ChatBot
+  </button>
+</div>
+
+
+         
         </div>
 
         {/* Right Images */}
         <div className="relative flex justify-center">
           <img
-            src="/app-android.png"
-            alt="Unacademy App Android"
-            className="h-[420px] z-10"
+            src="/Get Learning App.JPG"
+            alt="MindVsYou App Android"
+            className="h-[420px] z-10 rounded-2xl"
           />
-          <img
-            src="/app-ios.png"
-            alt="Unacademy App iOS"
-            className="h-[380px] absolute right-0 top-10"
-          />
+          
         </div>
       </div>
     </section>

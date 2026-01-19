@@ -49,7 +49,7 @@ const StartLearningSection = () => {
         {/* Left Content */}
         <div>
           <p className="text-4xl md:text-5xl font-bold text-[#3c4852]">
-            Start learning with <br /> Unacademy
+            Start learning with <br /> MindVsYou Coaching
           </p>
 
           <p className="mt-4 text-gray-600 max-w-md">

@@ -1,19 +1,33 @@
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
+import { useEffect } from "react";
 
 const classes = ["class8th", "class9th", "class10th", "class11th", "class12th"];
 
 const PyqLayout = () => {
   const [openClass, setOpenClass] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { className, subject } = useParams();
+  const { className } = useParams();
+
+  useEffect(() => {
+    if (className) {
+      setOpenClass(className);
+    }
+  }, [className]);
 
   return (
+    <>
     <div className="min-h-screen flex flex-col md:flex-row">
       
       {/* MOBILE HEADER */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 border-b">
+        <Link
+    to="/record/courses"
+    className="text-xs font-bold border px-3 py-1 rounded !no-underline"
+  >
+    ← Courses
+  </Link>
         <p className="font-bold text-lg">PYQs</p>
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <X /> : <Menu />}
@@ -31,6 +45,12 @@ const PyqLayout = () => {
         `}
       >
         <p className="font-bold text-lg mb-4 hidden md:block">PYQs</p>
+        <Link
+  to="/record/courses"
+  className="hidden md:inline-block text-xs font-bold border px-3 py-2 rounded mb-4 hover:bg-gray-100 !no-underline"
+>
+  ← Go back to Courses
+</Link>
 
         {classes.map((cls) => (
           <div key={cls}>
@@ -80,7 +100,10 @@ const PyqLayout = () => {
       <main className="flex-1 p-4 md:p-6 md:ml-0">
         <Outlet />
       </main>
+      
     </div>
+    
+    </>
   );
 };
 

@@ -3,25 +3,25 @@ const features = [
     id: 1,
     title: "Daily live classes",
     description:
-      "Chat with educators, ask questions, answer live polls, and get your doubts cleared – all while the class is going on",
+      "Chat with educators, ask questions, answer live polls, and get your doubts cleared – all while the class is going on.",
     bg: "bg-[#76A9FF]",
-    image: "/live-classes.png", // replace with your image/svg
+    image: "/Daily Live Classes.JPG", // replace with your image/svg
   },
   {
     id: 2,
     title: "Practice and revise",
     description:
-      "Learning isn’t just limited to classes with our practice section, mock tests and lecture notes shared as PDFs for your revision",
+      "Learning isn’t just limited to classes with our practice section, mock tests and lecture notes shared as PDFs for your revision.",
     bg: "bg-[#FF9E9E]",
-    image: "/practice.png",
+    image: "/Practice and Revise.JPG",
   },
   {
     id: 3,
     title: "Learn anytime, anywhere",
     description:
-      "One subscription gets you access to all our live and recorded classes to watch from the comfort of any of your devices",
+      "One subscription gets you access to all our live and recorded classes to watch from the comfort of any of your devices.",
     bg: "bg-[#FFC677]",
-    image: "/learn-anywhere.png",
+    image: "/Learn Anywhere.JPG",
   },
 ];
 
@@ -38,14 +38,14 @@ const FeaturesSection = () => {
               <img
                 src={feature.image}
                 alt={feature.title}
-                className="max-h-48 object-contain"
+                className="max-h-48 object-contain rounded-2xl"
               />
             </div>
 
             {/* Text */}
-            <h3 className="mt-6 text-xl font-semibold text-gray-900">
+            <p className="mt-10 text-xl font-semibold text-gray-900">
               {feature.title}
-            </h3>
+            </p>
             <p className="mt-3 text-gray-600 text-sm leading-relaxed">
               {feature.description}
             </p>

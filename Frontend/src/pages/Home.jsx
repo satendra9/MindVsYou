@@ -16,12 +16,14 @@ import FeaturesSection from "./FeatureSection.jsx";
 import GetAppSection from "./GetAppSection.jsx";
 import StartLearningSection from "./StartLearningSection.jsx";
 import Footer from "./Footer.jsx";
+import { Menu, X } from "lucide-react";
 
 const Home = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const sliderRef = useRef(null);
+  const [open, setOpen] = useState(false);
   
 
   const slideLeft = () => {
@@ -91,47 +93,130 @@ const Home = () => {
   return (
      <div className="w-full overflow-x-hidden">
       {/* NAVBAR */}
-<nav
-  className="w-full bg-center bg-contain bg-no-repeat bg-black"
-  style={{ backgroundImage: "url('/personalbrand.png')" }}
->
-  <div className="w-full bg-white border border-gray-200 h-18">
-    <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+ <nav className="w-full bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <img
+                src="/mindvsyou-logo.JPG"
+                alt="Logo"
+                className="w-12 h-12 object-contain"
+              />
+            </div>
 
-      {/* LOGO */}
-      <img src="/mindvsyou-logo.JPG" className="w-14 h-14" />
+            {/* Desktop Menu */}
+            <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
+              <li>
+                <Link to="/" className="text-black !no-underline">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/about" className="text-black !no-underline">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/contact" className="text-black !no-underline">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/policy" className="text-black !no-underline">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/record/blogs" className="text-black !no-underline">
+                  Blogs
+                </Link>
+              </li>
 
-      {/* CENTER MENU */}
-      <ul className="flex flex-wrap justify-center gap-4 text-sm font-medium">
-        <li><Link to="/record/courses" className="text-black !no-underline">Courses</Link></li>
-        <li><Link to="/record/about" className="text-black !no-underline">About</Link></li>
-        <li><Link to="/record/contact" className="text-black !no-underline">Contact</Link></li>
-        <li><Link to="/record/policy" className="text-black !no-underline">Privacy Policy</Link></li>
-        <li><Link to="/record/blogs" className="text-black !no-underline">Blogs</Link></li>
-      </ul>
+              <li>
+                {isTeacher() ? (
+                  <button
+                    onClick={logout}
+                    className="text-black font-semibold"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    to="/api/auth/teacher-login"
+                    className="border border-black rounded px-3 py-1.5 text-black !no-underline hover:bg-gray-100"
+                  >
+                    Teacher Login
+                  </Link>
+                )}
+              </li>
+            </ul>
 
-      {/* RIGHT ACTION */}
-      <div>
-        {isTeacher() ? (
-          <button onClick={logout} className="text-black font-semibold">
-            Logout
-          </button>
-        ) : (
-          <Link
-            to="/api/auth/teacher-login"
-            className="text-black text-sm !no-underline border border-black rounded px-3 py-2 font-medium hover:bg-gray-100"
-          >
-            Teacher Login
-          </Link>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden text-gray-700"
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {open && (
+          <div className="md:hidden border-t border-gray-200 bg-white">
+            <ul className="flex flex-col px-4 py-4 gap-4 text-sm font-medium">
+              <li>
+                <Link onClick={() => setOpen(false)} to="/" className="text-black">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/about" className="text-black">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/contact" className="text-black">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/policy" className="text-black">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link onClick={() => setOpen(false)} to="/record/blogs" className="text-black">
+                  Blogs
+                </Link>
+              </li>
+
+              <li>
+                {isTeacher() ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="text-black font-semibold text-left"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    to="/api/auth/teacher-login"
+                    className="border border-black rounded px-3 py-2 text-black w-fit"
+                  >
+                    Teacher Login
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
         )}
-      </div>
-
-    </div>
-  </div>
-
-  {/* HERO HEIGHT */}
-  <div className="min-h-[220px] sm:min-h-[260px] md:min-h-[320px]" />
-</nav>
+      </nav>
 
   <div className="max-w-7xl mx-auto px-4 md:px-6 mt-20">
   <div className="flex flex-col md:flex-row items-center gap-12">

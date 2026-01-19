@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Search } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -23,9 +23,22 @@ const SelectGoal = () => {
     }
   };
 
-  useEffect(() => {
-    fetchGoals();
-  }, []);
+const fetchedOnce = useRef(false);
+
+useEffect(() => {
+  if (fetchedOnce.current) return;
+  fetchedOnce.current = true;
+  fetchGoals();
+}, []);
+
+useEffect(() => {
+  const delay = setTimeout(() => {
+    fetchGoals(search);
+  }, 400);
+
+  return () => clearTimeout(delay);
+}, [search]);
+
 
   // Live search
   const handleSearch = (e) => {

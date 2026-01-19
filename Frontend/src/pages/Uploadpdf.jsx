@@ -3,13 +3,13 @@ import axios from "axios";
 import { useState } from "react";
 
 const UploadPdf = () => {
-  const params = useParams();
-  const section = params.section;
-  const classname = params.classname;
-  const subject = params.subject.toLowerCase();
+  const { classname, subject, section } = useParams();
+  const navigate = useNavigate();
+
+  const isPyq = window.location.pathname.includes("/record/pyq");
+
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
-  const navigate = useNavigate();
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -20,11 +20,9 @@ const UploadPdf = () => {
     formData.append("title", title);
     formData.append("pdf", file);
 
-    // 🔥 DECIDE URL BASED ON SECTION
-    const uploadUrl =
-      section === "pyq"
-        ? `${import.meta.env.VITE_API_BASE_URL}/record/upload/pyq/${classname}/${subject}`
-        : `${import.meta.env.VITE_API_BASE_URL}/record/upload/${section}/${subject}`;
+    const uploadUrl = isPyq
+      ? `${import.meta.env.VITE_API_BASE_URL}/record/upload/pyq/${classname}/${subject}`
+      : `${import.meta.env.VITE_API_BASE_URL}/record/upload/${section}/${subject}`;
 
     await axios.post(uploadUrl, formData, {
       headers: {
@@ -34,19 +32,18 @@ const UploadPdf = () => {
 
     alert("PDF uploaded successfully");
 
-    // 🔁 Redirect correctly
-    if (section === "pyq") {
-      navigate(`/record/pyq/${classname}/${subject}`);
-    } else {
-      navigate(`/record/${section}`);
-    }
+    // ✅ Redirect BACK to SAME PYQ LIST
+    if (isPyq) {
+      navigate(`/record/pyq/${classname}/${subject}`, { replace: true });
+    }else {
+  navigate(`/record/${section}`, { replace: true });
+}
   };
 
   return (
     <form className="p-6 max-w-md mx-auto mt-24" onSubmit={handleUpload}>
-      <p className="text-xl font-bold text-gray-800 mb-4">
-        Upload {subject.toUpperCase()} PDF
-        {section === "pyq" && ` (${classname.toUpperCase()})`}
+      <p className="text-xl font-bold mb-4">
+        Upload {subject.toUpperCase()} PDF ({classname?.toUpperCase()})
       </p>
 
       <input
@@ -72,5 +69,3 @@ const UploadPdf = () => {
 };
 
 export default UploadPdf;
-
-
