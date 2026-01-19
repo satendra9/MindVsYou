@@ -44,7 +44,6 @@ useEffect(() => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
-    fetchGoals(value);
   };
 
   const normalize = (title) =>
