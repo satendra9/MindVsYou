@@ -15,7 +15,7 @@ const PyqList = () => {
 
   const fetchPdfs = async () => {
     const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/pyq/${classname}/${subject}`
+      `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/pyq/${classname}/${subject}`,
     );
     setPdfs(res.data || []);
   };
@@ -24,10 +24,10 @@ const PyqList = () => {
     if (!window.confirm("Delete this PYQ?")) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       await axios.delete(
         `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       setPdfs((prev) => prev.filter((p) => p._id !== id));
     } catch {
@@ -40,16 +40,14 @@ const PyqList = () => {
     if (!newTitle) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       await axios.put(
         `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${pdf._id}`,
         { title: newTitle },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       setPdfs((prev) =>
-        prev.map((p) =>
-          p._id === pdf._id ? { ...p, title: newTitle } : p
-        )
+        prev.map((p) => (p._id === pdf._id ? { ...p, title: newTitle } : p)),
       );
     } catch {
       alert("Unauthorized or failed to edit PYQ");
@@ -76,9 +74,7 @@ const PyqList = () => {
 
       {/* LIST */}
       {pdfs.length === 0 ? (
-        <p className="text-gray-500 font-semibold">
-          No PYQs uploaded yet
-        </p>
+        <p className="text-gray-500 font-semibold">No PYQs uploaded yet</p>
       ) : (
         <div className="space-y-3">
           {pdfs.map((pdf) => (
@@ -97,11 +93,13 @@ const PyqList = () => {
               </p>
 
               {/* ACTIONS */}
-              <div className="
+              <div
+                className="
                 flex flex-wrap items-center gap-4
                 md:justify-end md:flex-nowrap
                 whitespace-nowrap
-              ">
+              "
+              >
                 <a
                   href={pdf.pdfUrl}
                   target="_blank"
@@ -138,7 +136,3 @@ const PyqList = () => {
 };
 
 export default PyqList;
-
-
-
-

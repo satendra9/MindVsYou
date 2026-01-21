@@ -21,7 +21,7 @@ const PdfSection = () => {
   const fetchPdfs = async (subject) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${section}/${subject}`
+        `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${section}/${subject}`,
       );
 
       setPdfs((prev) => ({
@@ -37,7 +37,7 @@ const PdfSection = () => {
     if (!window.confirm("Delete this PDF?")) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       await axios.delete(
         `${import.meta.env.VITE_API_BASE_URL}/record/pdf/${section}/${subject}/${pdfId}`,
@@ -45,7 +45,7 @@ const PdfSection = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setPdfs((prev) => ({
@@ -63,7 +63,7 @@ const PdfSection = () => {
     if (!newTitle) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       await axios.put(
         `${import.meta.env.VITE_API_BASE_URL}/record/pdf/${section}/${subject}/${pdf._id}`,
@@ -72,13 +72,13 @@ const PdfSection = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setPdfs((prev) => ({
         ...prev,
         [subject]: prev[subject].map((p) =>
-          p._id === pdf._id ? { ...p, title: newTitle } : p
+          p._id === pdf._id ? { ...p, title: newTitle } : p,
         ),
       }));
     } catch (err) {
@@ -127,9 +127,7 @@ const PdfSection = () => {
                 className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2 md:gap-4 p-3 border-b"
               >
                 {/* PDF TITLE */}
-                <p className="font-bold text-sm break-words">
-                  {pdf.title}
-                </p>
+                <p className="font-bold text-sm break-words">{pdf.title}</p>
 
                 {/* ACTIONS */}
                 <div className="flex gap-4 md:gap-3 md:justify-end">
@@ -192,4 +190,3 @@ const PdfSection = () => {
 };
 
 export default PdfSection;
-

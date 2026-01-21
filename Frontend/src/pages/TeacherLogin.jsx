@@ -12,13 +12,16 @@ const TeacherLogin = () => {
     setError("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/teacher-login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/teacher-login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
-      });
+      );
 
       const data = await res.json();
 
@@ -27,12 +30,11 @@ const TeacherLogin = () => {
         return;
       }
 
-      
-       localStorage.setItem("token", data.token);
+      sessionStorage.setItem("token", data.token);
 
       // ✅ DECODE TOKEN → STORE ROLE (SYNC WITH BACKEND)
       const decoded = JSON.parse(atob(data.token.split(".")[1]));
-      localStorage.setItem("role", decoded.role.toLowerCase());
+      sessionStorage.setItem("role", decoded.role.toLowerCase());
 
       navigate("/");
     } catch {
@@ -49,14 +51,10 @@ const TeacherLogin = () => {
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-md"
         >
-          <h2 className="text-2xl font-bold text-center mb-6">
-            Teacher Login
-          </h2>
+          <h2 className="text-2xl font-bold text-center mb-6">Teacher Login</h2>
 
           {error && (
-            <p className="bg-red-100 text-red-700 p-2 mb-4 rounded">
-              {error}
-            </p>
+            <p className="bg-red-100 text-red-700 p-2 mb-4 rounded">{error}</p>
           )}
 
           <input
@@ -98,4 +96,3 @@ const TeacherLogin = () => {
 };
 
 export default TeacherLogin;
-

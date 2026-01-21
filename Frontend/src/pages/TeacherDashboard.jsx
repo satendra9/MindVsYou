@@ -5,22 +5,20 @@ const TeacherDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       navigate("/");
     }
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     navigate("/");
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-100">
-      <h1 className="text-3xl font-bold mb-4">
-        Welcome Teacher 👋
-      </h1>
+      <h1 className="text-3xl font-bold mb-4">Welcome Teacher 👋</h1>
 
       <button
         onClick={logout}

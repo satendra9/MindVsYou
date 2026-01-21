@@ -46,7 +46,7 @@ function App() {
   {/* ===== AUTH ===== */}
   <Route path="/api/auth/teacher-login" element={<TeacherLogin />} />
   <Route path="/api/auth/teacher-register" element={<TeacherRegister />} />
-  <Route path="/api/auth/teacher-dashboard" element={<TeacherDashboard />} />
+  
 
   {/* ===== NORMAL CLASS PDFs ===== */}
   <Route path="/record/:section" element={<PdfSection />} />

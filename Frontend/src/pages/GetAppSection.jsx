@@ -6,7 +6,7 @@ const GetAppSection = () => {
         {/* Left Content */}
         <div>
           <p className="text-4xl md:text-5xl font-extrabold text-[#3c4852]">
-            Get the learning <br /> app
+            Get the MindVsYou Learning app
           </p>
 
           <p className="mt-4 text-gray-600 text-base max-w-md font-medium">
@@ -14,23 +14,26 @@ const GetAppSection = () => {
           </p>
 
           <div className="mt-6 flex gap-3">
-  <button
-    className="
-      flex items-center gap-2
-      bg-gradient-to-r from-purple-400 to-purple-500
-      hover:from-purple-500 hover:to-purple-600
-      text-white font-semibold
-      px-7 py-3
-      rounded-full
-      shadow-lg shadow-purple-300/40
-      transition-all duration-300
-      hover:scale-105
-      active:scale-95
-      rounded
-    "
-  >
-    🤖 Go to MindVsYou ChatBot
-  </button>
+  <a
+  href="https://wa.me/7905574323?text=Hi"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    flex items-center gap-2
+    bg-gradient-to-r from-purple-400 to-purple-500
+    hover:from-purple-500 hover:to-purple-600
+    text-white font-semibold
+    px-7 py-3
+    rounded-full
+    shadow-lg shadow-purple-300/40
+    transition-all duration-300
+    hover:scale-105
+    active:scale-95
+    !no-underline
+  "
+>
+  🤖 Go to MindVsYou ChatBot
+</a>
 </div>
 
 

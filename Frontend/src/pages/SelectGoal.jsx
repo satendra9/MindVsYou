@@ -9,27 +9,22 @@ const SelectGoal = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch goals dynamically
-  const fetchGoals = async (query = "") => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/record/goals?search=${query}`
-      );
-      setGoals(res.data);
-    } catch (error) {
-      console.error("Error fetching goals:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-const fetchedOnce = useRef(false);
-
-useEffect(() => {
-  if (fetchedOnce.current) return;
-  fetchedOnce.current = true;
-  fetchGoals();
-}, []);
+const fetchGoals = async (query = "") => {
+  try {
+    if (isFirstLoad) setLoading(true);
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/record/goals?search=${query}`
+    );
+    setGoals(res.data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+    setIsFirstLoad(false);
+  }
+};
 
 useEffect(() => {
   const delay = setTimeout(() => {

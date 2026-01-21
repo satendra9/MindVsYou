@@ -113,6 +113,11 @@ const Home = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/record/courses" className="text-black !no-underline">
+                  Courses
+                </Link>
+              </li>
+              <li>
                 <Link to="/record/about" className="text-black !no-underline">
                   About
                 </Link>
@@ -172,6 +177,11 @@ const Home = () => {
                 </Link>
               </li>
               <li>
+                <Link onClick={() => setOpen(false)} to="/record/courses" className="text-black">
+                  Courses
+                </Link>
+              </li>
+              <li>
                 <Link onClick={() => setOpen(false)} to="/record/about" className="text-black">
                   About
                 </Link>
@@ -221,7 +231,7 @@ const Home = () => {
   <div className="max-w-7xl mx-auto px-4 md:px-6 mt-20">
   <div className="flex flex-col md:flex-row items-center gap-12">
     
-    {/* LEFT CONTENT */}
+    {/* Email Section */}
     <div className="w-full md:w-1/2 text-center md:text-left">
       <p className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 leading-tight">
         Crack your goals with <br className="hidden md:block" />
@@ -322,9 +332,15 @@ const Home = () => {
             </ul>
 
             {/* CTA */}
-            <button className="mt-8 inline-block bg-[#3c4852] hover:bg-[#2f3a42] text-white font-semibold px-6 py-3 rounded transition">
-              Whatsapp Us!
-            </button>
+            <a
+              href="https://wa.me/7838782723?text=Hi%21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-block bg-[#3c4852] hover:bg-[#2f3a42] text-white font-semibold px-6 py-3 rounded transition !no-underline"
+            >
+            Whatsapp Us!
+            </a>
+
           </div>
         </div>
       </div>

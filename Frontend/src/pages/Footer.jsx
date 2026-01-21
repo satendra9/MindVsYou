@@ -6,6 +6,7 @@ import {
   Youtube,
   Phone,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -29,8 +30,27 @@ const Footer = () => {
 
             {/* App Buttons */}
             <div className="mt-4 flex gap-3">
-              <button className="mt-8 bg-[#00b894] hover:bg-[#00a37f] text-white font-semibold px-6 py-3 rounded transition">Go to our MindVsYou ChatBot</button>
-            </div>
+              <a
+                href="https://wa.me/7905574323?text=Hi%21"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                mt-8
+                inline-block
+                bg-[#00b894]
+                hover:bg-[#00a37f]
+                text-white
+                font-semibold
+                px-6
+                py-3
+                rounded
+                transition
+                !no-underline
+                "
+              >
+              Go to our MindVsYou ChatBot
+              </a>
+              </div>
 
             {/* Contact */}
             <div className="mt-8">
@@ -41,7 +61,7 @@ const Footer = () => {
 
               <div className="mt-2 flex items-center gap-2 text-sm font-bold text-gray-800">
                 <Phone size={16} />
-                Call +91 8585858585
+                Call +91 7838782723
               </div>
             </div>
           </div>
@@ -50,10 +70,10 @@ const Footer = () => {
           <div>
             <p className="font-semibold text-gray-900 mb-3">Company</p>
             <ul className="space-y-3 text-sm text-gray-600">
-              <li>About Us</li>
-              <li>Blogs</li>
-              <li>Privacy policy</li>
-              <li>Terms and conditions</li>
+              <li><Link to="/record/about" className="!no-underline">About Us</Link></li>
+              <li><Link to="/record/blogs" className="!no-underline">Blogs</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Privacy Policy</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Terms And Conditions</Link></li>
             </ul>
           </div>
 
@@ -63,11 +83,11 @@ const Footer = () => {
               Help & support
             </p>
             <ul className="space-y-3 text-sm text-gray-600">
-              <li>User Guidelines</li>
-              <li>Site Map</li>
-              <li>Refund Policy</li>
-              <li>Takedown Policy</li>
-              <li>Grievance Redressal</li>
+              <li><Link to="/record/policy" className="!no-underline">User Guidelines</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Site Map</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Refund Policy</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Takedown Policy</Link></li>
+              <li><Link to="/record/policy" className="!no-underline">Grievance Redressal</Link></li>
             </ul>
           </div>
 
@@ -79,10 +99,26 @@ const Footer = () => {
               Popular Goals
             </p>
             <ul className="space-y-3 text-sm text-gray-600">
-              <li>IIT JEE</li>
-              <li>NEET</li>
-              <li>Class 12tH</li>
-              <li>Class 10tH</li>
+              <li>
+                <Link to="/record/courses" className="!no-underline">
+                IIT JEE
+                </Link>
+                </li>
+              <li>
+                <Link to="/record/courses" className="!no-underline">
+                NEET
+                </Link>
+                </li>
+              <li>
+                <Link to="/record/courses" className="!no-underline">
+                Class 12th
+                </Link>
+                </li>
+              <li>
+                <Link to="/record/courses" className="!no-underline">
+                Class 10th
+                </Link>
+                </li>
             </ul>
           </div>
           

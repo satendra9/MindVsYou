@@ -1,5 +1,5 @@
 const isTeacher = () => {
-  return localStorage.getItem("role") === "teacher";
+  return sessionStorage.getItem("role") === "teacher";
 };
 
 export default isTeacher;
