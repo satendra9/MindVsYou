@@ -17,20 +17,10 @@ const SUBJECTS_BY_CLASS = {
   ],
 };
 
-const YEARS = [2025, 2024, 2023];
-
-
-
-const PyqLayout = () => {
+const TestLayout = () => {
   const [openClass, setOpenClass] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { classname } = useParams();
-  const [openYear, setOpenYear] = useState(null);
-  
-
-const toggleYear = (yearKey) => {
-  setOpenYear(openYear === yearKey ? null : yearKey);
-};
+  const { classname, subject } = useParams();
 
   useEffect(() => {
     if (classname) {
@@ -38,15 +28,9 @@ const toggleYear = (yearKey) => {
     }
   }, [classname]);
 
-  useEffect(() => {
-  // auto open sidebar on mobile
-  if (window.innerWidth < 768) {
-    setSidebarOpen(true);
-  }
-}, []);
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
+      
       {/* MOBILE HEADER */}
       <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
         <Link
@@ -56,7 +40,7 @@ const toggleYear = (yearKey) => {
           ← Courses
         </Link>
 
-        <p className="font-bold text-base text-gray-800">PYQs</p>
+        <p className="font-bold text-base text-gray-800">Tests</p>
 
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -81,7 +65,7 @@ const toggleYear = (yearKey) => {
         `}
       >
         <p className="font-bold text-lg text-gray-800 mb-4 hidden md:block">
-          Previous Year Questions
+          Test Papers
         </p>
 
         <Link
@@ -106,7 +90,7 @@ const toggleYear = (yearKey) => {
                 }
               `}
             >
-              {cls}
+              {cls.replace("class", "class ").toLowerCase()}
               <ChevronDown
                 size={16}
                 className={`transition-transform ${
@@ -116,48 +100,37 @@ const toggleYear = (yearKey) => {
             </button>
 
             {openClass === cls && (
-              <div className="mt-2 ml-4 pl-3 space-y-3 text-sm">
-                {(SUBJECTS_BY_CLASS[cls] ||
-                  SUBJECTS_BY_CLASS.default).map((sub) => (
-                  <div key={sub.key}>
-                    <p className="font-semibold text-gray-700">
-                      {sub.label}
-                    </p>
-
-                    <div className="ml-3 mt-1 flex flex-col gap-1">
-                      {YEARS.map((year) => {
-  const yearKey = `${cls}-${sub.key}-${year}`;
-  const isOpen = openYear === yearKey;
+              <div className="mt-2 ml-4 pl-3 flex flex-col gap-2 text-sm">
+                {(SUBJECTS_BY_CLASS[cls] || SUBJECTS_BY_CLASS.default).map((sub) => {
+  const isActive = subject === sub.key;
 
   return (
     <Link
-      key={year}
-      to={`/record/pyq/${cls}/${sub.key}/${year}`}
-      onClick={() => {
-        toggleYear(yearKey);
-        setSidebarOpen(false); // close sidebar on mobile
-      }}
+      key={sub.key}
+      to={`/record/test/${cls}/${sub.key}`}
+      onClick={() => setSidebarOpen(false)}
       className="
         flex items-center gap-2
-        pl-2 py-1
-        text-blue-600 font-semibold
-        hover:text-green-600 transition
+        px-2 py-1 rounded
+        font-semibold
+        transition
         !no-underline
+        text-blue-600
+        hover:text-green-600
+        hover:bg-yellow-50
       "
     >
-      {isOpen ? (
-        <FolderOpen size={16} className="text-yellow-600" />
+      {isActive ? (
+        <FolderOpen size={16} className="text-yellow-500" />
       ) : (
-        <Folder size={16} className="text-yellow-600" />
+        <Folder size={16} className="text-yellow-400" />
       )}
-      <span>{year}</span>
+
+      <span>{sub.label}</span>
     </Link>
   );
 })}
 
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
           </div>
@@ -173,8 +146,8 @@ const toggleYear = (yearKey) => {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-3 sm:p-4 md:p-6">
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 min-h-full">
+      <main className="flex-1 p-3 sm:p-4 md:p-6 flex">
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 flex-1">
           <Outlet />
         </div>
       </main>
@@ -182,7 +155,5 @@ const toggleYear = (yearKey) => {
   );
 };
 
-export default PyqLayout;
-
-
+export default TestLayout;
 

@@ -19,9 +19,15 @@ const goals = [
   { id: 4, title: "Class 10th", icon: "📕" },
   { id: 5, title: "Class 9th", icon: "📗" },
   { id: 6, title: "Class 8th", icon: "📙" },
+  { id: 7, title: "Test Papers", icon: "🧪" },
 ];
 
 const router = express.Router();
+
+const SUBJECTS_BY_CLASS = {
+  class10th: ["science", "maths"],
+  class12th: ["physics", "chemistry", "maths"],
+};
 
 //Homepage Goals Slider 
 router.get("/goals", (req, res) => {
@@ -120,19 +126,30 @@ router.post(
 );
 
 router.post(
-  "/upload/pyq/:classname/:subject",
+  "/upload/pyq/:classname/:subject/:year",
   authMiddleware,
   isTeacher,
   upload.single("pdf"),
   async (req, res) => {
     try {
-      const { classname, subject } = req.params;
+      const { classname, subject, year } = req.params;
 
       if (!req.file) {
         return res.status(400).json({ message: "PDF file not received" });
       }
 
-      const folderName = `pdfs/pyq/${classname}/${subject}`;
+      // normalize (VERY important)
+      const normalize = (v = "") => v.replace(/\s+/g, "").toLowerCase();
+
+      const normalizedClass = normalize(classname);
+      const normalizedSubject = normalize(subject);
+      const numericYear = Number(year);
+
+      if (isNaN(numericYear)) {
+        return res.status(400).json({ message: "Invalid year" });
+      }
+
+      const folderName = `pdfs/pyq/${normalizedClass}/${normalizedSubject}/${numericYear}`;
 
       const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "raw",
@@ -144,6 +161,43 @@ router.post(
         pdfUrl: result.secure_url,
         publicId: result.public_id,
         section: "pyq",
+        classname: normalizedClass,
+        subject: normalizedSubject,
+        year: numericYear,
+      });
+
+      res.status(201).json(pdf);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+  router.post(
+  "/upload/test/:classname/:subject/:year",
+  authMiddleware,
+  isTeacher,
+  upload.single("pdf"),
+  async (req, res) => {
+    try {
+      const { classname, subject } = req.params;
+
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file not received" });
+      }
+
+      const folderName = `pdfs/test/${classname}/${subject}`;
+
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: "raw",
+        folder: folderName,
+      });
+
+      const pdf = await Pdf.create({
+        title: req.body.title,
+        pdfUrl: result.secure_url,
+        publicId: result.public_id,
+        section: "test",
         subject,
         classname,
       });
@@ -154,6 +208,23 @@ router.post(
     }
   }
 );
+
+router.get("/pdfs/test/:classname/:subject", async (req, res) => {
+  try {
+    const { classname, subject } = req.params;
+
+    const pdfs = await Pdf.find({
+      section: "test",
+      classname,
+      subject,
+    }).sort({ createdAt: -1 });
+
+    res.json(pdfs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 
 /* Get pdf by section */
@@ -173,14 +244,23 @@ router.get("/pdfs/:section/:subject", async (req, res) => {
   }
 });
 
-router.get("/pdfs/pyq/:classname/:subject", async (req, res) => {
+router.get("/pdfs/pyq/:classname/:subject/:year", async (req, res) => {
   try {
-    const { classname, subject } = req.params;
+    const normalize = (v = "") => v.replace(/\s+/g, "").toLowerCase();
+
+    const classname = normalize(req.params.classname);
+    const subject = normalize(req.params.subject);
+    const year = Number(req.params.year);
+
+    if (isNaN(year)) {
+      return res.status(400).json({ message: "Invalid year" });
+    }
 
     const pdfs = await Pdf.find({
       section: "pyq",
       classname,
       subject,
+      year,
     }).sort({ createdAt: -1 });
 
     res.json(pdfs);
@@ -188,6 +268,7 @@ router.get("/pdfs/pyq/:classname/:subject", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /* delete pdf by section */
 router.delete("/pdf/:section/:subject/:id", authMiddleware, isTeacher, async (req, res) => {

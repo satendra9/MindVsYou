@@ -19,6 +19,8 @@ import TeacherRegister from "./pages/TeacherRegister.jsx";
 import TeacherRouting from "../src/pages/TeacherRouting.jsx"
 import PyqLayout from "./pages/PyqLayout.jsx";
 import PyqList from "./pages/PyqList.jsx";
+import TestLayout from "./pages/TestLayout.jsx";
+import TestList from "./pages/TestList.jsx";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -31,7 +33,6 @@ function App() {
   return (
   
   <Routes>
-    
 
   {/* ===== NORMAL PAGES ===== */}
   <Route path="/" element={<Home />} />
@@ -46,11 +47,34 @@ function App() {
   {/* ===== AUTH ===== */}
   <Route path="/api/auth/teacher-login" element={<TeacherLogin />} />
   <Route path="/api/auth/teacher-register" element={<TeacherRegister />} />
-  
 
-  {/* ===== NORMAL CLASS PDFs ===== */}
-  <Route path="/record/:section" element={<PdfSection />} />
+  {/* ===== PYQ ROUTES ===== */}
+  <Route path="/record/pyq" element={<PyqLayout />}>
+    <Route path=":classname/:subject/:year" element={<PyqList />} />
+    <Route
+      path=":classname/:subject/:year/upload"
+      element={
+        <TeacherRouting>
+          <UploadPdf />
+        </TeacherRouting>
+      }
+    />
+  </Route>
 
+  {/* ===== TEST PAPERS ROUTES ===== */}
+  <Route path="/record/test" element={<TestLayout />}>
+    <Route path=":classname/:subject" element={<TestList />} />
+    <Route
+      path=":classname/:subject/upload"
+      element={
+        <TeacherRouting>
+          <UploadPdf />
+        </TeacherRouting>
+      }
+    />
+  </Route>
+
+  {/* ===== NORMAL CLASS UPLOAD ===== */}
   <Route
     path="/record/:section/:subject/upload"
     element={
@@ -60,28 +84,11 @@ function App() {
     }
   />
 
-  {/* ===== PYQ ROUTES (✅ NESTED PROPERLY) ===== */}
-  <Route path="/record/pyq" element={<PyqLayout />}>
+  {/* 🚨 GENERIC ROUTE — MUST BE LAST */}
+  <Route path="/record/:section" element={<PdfSection />} />
 
-    <Route
-      path=":classname/:subject"
-      element={<PyqList />}
-    />
+</Routes>
 
-    <Route
-      path=":classname/:subject/upload"
-      element={
-        <TeacherRouting>
-          <UploadPdf />
-        </TeacherRouting>
-      }
-    />
-
-    </Route>
-    
-
-    
-  </Routes>
  
 
   )

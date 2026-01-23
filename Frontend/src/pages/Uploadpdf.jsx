@@ -4,13 +4,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const UploadPdf = () => {
-  const { classname, subject, section } = useParams();
+  const { classname, subject, section, year } = useParams();
   const navigate = useNavigate();
 
   const isPyq = window.location.pathname.includes("/record/pyq");
 
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
+
+  const SUBJECTS_BY_CLASS = {
+  class10th: ["science", "maths"],
+  class12th: ["physics", "chemistry", "maths"],
+};
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -21,9 +26,21 @@ const UploadPdf = () => {
     formData.append("title", title);
     formData.append("pdf", file);
 
-    const uploadUrl = isPyq
-      ? `${import.meta.env.VITE_API_BASE_URL}/record/upload/pyq/${classname}/${subject}`
-      : `${import.meta.env.VITE_API_BASE_URL}/record/upload/${section}/${subject}`;
+    const isTest = window.location.pathname.includes("/record/test");
+
+
+    let uploadUrl = "";
+
+    if (isPyq) {
+  // year is REQUIRED only for PYQ
+    uploadUrl = `http://localhost:5000/record/upload/pyq/${classname}/${subject}/${year}`;
+    } else if (isTest) {
+    uploadUrl = `http://localhost:5000/record/upload/test/${classname}/${subject}`;
+    } else {
+    uploadUrl = `http://localhost:5000/record/upload/${section}/${subject}`;
+    }
+
+
 
     await axios.post(uploadUrl, formData, {
       headers: {
@@ -34,25 +51,25 @@ const UploadPdf = () => {
     alert("PDF uploaded successfully");
 
     // Redirect back to the list
+    if (isPyq && !year) {
+    return (
+    <p className="text-red-600 font-semibold">
+      Year is required for PYQ uploads
+    </p>
+    );
+    }
     if (isPyq) {
-      navigate(`/record/pyq/${classname}/${subject}`, { replace: true });
+      navigate(`/record/pyq/${classname}/${subject}/${year}`, { replace: true });
+    } else if (isTest) {
+      navigate(`/record/test/${classname}/${subject}`, { replace: true });
     } else {
       navigate(`/record/${section}`, { replace: true });
     }
+
   };
 
   return (
     <>
-      <div className="ml-6 mt-6">
-        <button className="border rounded px-2 py-2">
-          <Link
-            to="/record/courses"
-            className="text-sm font-bold !text-green-800 !no-underline"
-          >
-            Go back to Courses
-          </Link>
-        </button>
-      </div>
       <form
         className="p-6 max-w-md mx-auto mt-16 md:mt-24"
         onSubmit={handleUpload}

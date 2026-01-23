@@ -4,18 +4,20 @@ import axios from "axios";
 import isTeacher from "../../middleware/isTeacher";
 
 const PyqList = () => {
-  const { classname, subject } = useParams();
+  const { classname, subject, year } = useParams();
   const [pdfs, setPdfs] = useState([]);
 
   const teacher = isTeacher();
 
   useEffect(() => {
-    fetchPdfs();
-  }, [classname, subject]);
+    if (classname && subject && year) {
+      fetchPdfs();
+    }
+  }, [classname, subject, year]);
 
   const fetchPdfs = async () => {
     const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/pyq/${classname}/${subject}`,
+      `http://localhost:5000/record/pdfs/pyq/${classname}/${subject}/${year}`
     );
     setPdfs(res.data || []);
   };
@@ -26,8 +28,8 @@ const PyqList = () => {
     try {
       const token = sessionStorage.getItem("token");
       await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } },
+        `http://localhost:5000/record/pdf/pyq/${subject}/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setPdfs((prev) => prev.filter((p) => p._id !== id));
     } catch {
@@ -42,29 +44,39 @@ const PyqList = () => {
     try {
       const token = sessionStorage.getItem("token");
       await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${pdf._id}`,
+        `http://localhost:5000/record/pdf/pyq/${subject}/${pdf._id}`,
         { title: newTitle },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setPdfs((prev) =>
-        prev.map((p) => (p._id === pdf._id ? { ...p, title: newTitle } : p)),
+        prev.map((p) =>
+          p._id === pdf._id ? { ...p, title: newTitle } : p
+        )
       );
     } catch {
       alert("Unauthorized or failed to edit PYQ");
     }
   };
 
+  if (!year) {
+    return (
+      <p className="text-red-600 font-semibold">
+        Please select a year
+      </p>
+    );
+  }
+
   return (
     <div className="p-4 max-w-6xl mx-auto">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <p className="text-lg sm:text-2xl font-bold">
-          {classname.toUpperCase()} – {subject.toUpperCase()} PYQs
+          {classname.toUpperCase()} – {subject.toUpperCase()} ({year}) PYQs
         </p>
 
         {teacher && (
           <Link
-            to={`/record/pyq/${classname}/${subject}/upload`}
+            to={`/record/pyq/${classname}/${subject}/${year}/upload`}
             className="bg-green-600 text-white px-4 py-2 rounded text-xs sm:text-sm font-bold w-fit !no-underline"
           >
             Upload PYQ
@@ -74,7 +86,9 @@ const PyqList = () => {
 
       {/* LIST */}
       {pdfs.length === 0 ? (
-        <p className="text-gray-500 font-semibold">No PYQs uploaded yet</p>
+        <p className="text-gray-500 font-semibold">
+          No PYQs uploaded yet
+        </p>
       ) : (
         <div className="space-y-3">
           {pdfs.map((pdf) => (
@@ -88,18 +102,12 @@ const PyqList = () => {
               "
             >
               {/* TITLE */}
-              <p className="font-semibold text-sm break-all md:break-words">
+              <p className="font-semibold text-sm break-words">
                 {pdf.title}
               </p>
 
               {/* ACTIONS */}
-              <div
-                className="
-                flex flex-wrap items-center gap-4
-                md:justify-end md:flex-nowrap
-                whitespace-nowrap
-              "
-              >
+              <div className="flex flex-wrap items-center gap-4 md:justify-end whitespace-nowrap">
                 <a
                   href={pdf.pdfUrl}
                   target="_blank"

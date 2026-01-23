@@ -15,7 +15,7 @@ const fetchGoals = async (query = "") => {
   try {
     if (isFirstLoad) setLoading(true);
     const res = await axios.get(
-      `${import.meta.env.VITE_API_BASE_URL}/record/goals?search=${query}`
+      `http://localhost:5000/record/goals?search=${query}`
     );
     setGoals(res.data);
   } catch (err) {
@@ -42,7 +42,17 @@ useEffect(() => {
   };
 
   const normalize = (title) =>
-    title.toLowerCase().replace(/\s+/g, "");
+  title.toLowerCase().replace(/\s+/g, "");
+
+const getRoute = (goal) => {
+  const title = goal.title.toLowerCase();
+
+  if (title.includes("pyq")) return "/record/pyq";
+  if (title.includes("test")) return "/record/test";
+
+  return `/record/${normalize(goal.title)}`;
+};
+
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
@@ -97,15 +107,12 @@ useEffect(() => {
               </p>
 
               <Link
-                to={
-                  goal.title.toLowerCase().includes("pyq")
-                    ? "/record/pyq"
-                    : `/record/${normalize(goal.title)}`
-                }
-                className="inline-block mt-3 sm:mt-4 bg-orange-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded text-xs font-bold !text-gray-800 !no-underline"
+              to={getRoute(goal)}
+              className="inline-block mt-3 sm:mt-4 bg-orange-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded text-xs font-bold !text-gray-800 !no-underline"
               >
-                STUDY MATERIAL
+              STUDY MATERIAL
               </Link>
+
             </div>
           ))}
         </div>

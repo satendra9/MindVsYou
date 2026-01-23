@@ -4,34 +4,48 @@ import axios from "axios";
 import isTeacher from "../../middleware/isTeacher";
 import { ChevronDown } from "lucide-react";
 
-const PdfSection = () => {
-  const { section } = useParams();
+const SUBJECTS_BY_SECTION = {
+  class12th: [
+    { key: "physics", label: "Physics" },
+    { key: "chemistry", label: "Chemistry" },
+    { key: "maths", label: "Maths" },
+  ],
+  default: [
+    { key: "science", label: "Science" },
+    { key: "maths", label: "Maths" },
+  ],
+};
 
-  const [openSubject, setOpenSubject] = useState(null);
-  const [pdfs, setPdfs] = useState({
-    science: [],
-    maths: [],
-  });
+
+const PdfSection = () => {
+const { section } = useParams();
+const [openSubject, setOpenSubject] = useState(null);
+const subjects =
+SUBJECTS_BY_SECTION[section] || SUBJECTS_BY_SECTION.default;
+
+const [pdfs, setPdfs] = useState({});
+
 
   useEffect(() => {
-    fetchPdfs("science");
-    fetchPdfs("maths");
-  }, [section]);
+  subjects.forEach((sub) => fetchPdfs(sub.key));
+}, [section]);
+
 
   const fetchPdfs = async (subject) => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${section}/${subject}`,
-      );
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/${section}/${subject}`
+    );
 
-      setPdfs((prev) => ({
-        ...prev,
-        [subject]: res.data || [],
-      }));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    setPdfs((prev) => ({
+      ...prev,
+      [subject]: res.data || [],
+    }));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   const handleDelete = async (pdfId, subject) => {
     if (!window.confirm("Delete this PDF?")) return;
@@ -110,14 +124,15 @@ const PdfSection = () => {
           {isTeacher() && (
             <Link
               to={`/record/${section}/${subject}/upload`}
-              className="inline-block bg-green-600 text-white px-4 py-2 rounded !no-underline text-xs font-bold"
+              className="inline-block bg-green-600 text-white px-4 py-2 rounded !no-underline 
+              text-xs font-bold"
             >
               Upload {label} PDF
             </Link>
           )}
 
           {pdfs[subject].length === 0 ? (
-            <p className="text-gray-500 text-xs font-bold mt-2">
+            <p className="text-gray-500 text-xs font-bold mt-2 ml-4">
               No PDFs uploaded yet
             </p>
           ) : (
@@ -182,8 +197,12 @@ const PdfSection = () => {
           {section.toUpperCase()} PDFs
         </p>
 
-        {renderSubject("science", "Science")}
-        {renderSubject("maths", "Maths")}
+      {subjects.map((sub) =>
+        <div key={sub.key}>
+        {renderSubject(sub.key, sub.label)}
+        </div>
+      )}
+
       </div>
     </div>
   );
