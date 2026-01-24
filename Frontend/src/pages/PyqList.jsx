@@ -17,7 +17,7 @@ const PyqList = () => {
 
   const fetchPdfs = async () => {
     const res = await axios.get(
-      `http://localhost:5000/record/pdfs/pyq/${classname}/${subject}/${year}`
+      `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/pyq/${classname}/${subject}/${year}`
     );
     setPdfs(res.data || []);
   };
@@ -28,7 +28,7 @@ const PyqList = () => {
     try {
       const token = sessionStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/record/pdf/pyq/${subject}/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPdfs((prev) => prev.filter((p) => p._id !== id));
@@ -44,7 +44,7 @@ const PyqList = () => {
     try {
       const token = sessionStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/record/pdf/pyq/${subject}/${pdf._id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/record/pdf/pyq/${subject}/${pdf._id}`,
         { title: newTitle },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -107,34 +107,64 @@ const PyqList = () => {
               </p>
 
               {/* ACTIONS */}
-              <div className="flex flex-wrap items-center gap-4 md:justify-end whitespace-nowrap">
-                <a
-                  href={pdf.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-600 font-bold text-sm !no-underline"
-                >
-                  View
-                </a>
+              {/* ACTIONS */}
+<div className="flex flex-wrap items-center gap-2 md:gap-3 md:justify-end">
+  {/* VIEW */}
+  <a
+    href={pdf.pdfUrl}
+    target="_blank"
+    rel="noreferrer"
+    className="
+      inline-flex items-center justify-center
+      px-3 py-1.5
+      text-xs font-bold
+      text-blue-600 border border-blue-600
+      rounded-full
+      
+      transition
+      !no-underline
+    "
+  >
+    View
+  </a>
 
-                {teacher && (
-                  <>
-                    <button
-                      onClick={() => handleEdit(pdf)}
-                      className="text-yellow-700 font-bold text-sm"
-                    >
-                      Edit
-                    </button>
+  {teacher && (
+    <>
+      {/* EDIT */}
+      <button
+        onClick={() => handleEdit(pdf)}
+        className="
+          inline-flex items-center justify-center
+          px-3 py-1.5
+          text-xs font-bold
+          text-yellow-700 border border-yellow-500
+          rounded-full
+          hover:bg-yellow-500 hover:text-white
+          transition
+        "
+      >
+        Edit
+      </button>
 
-                    <button
-                      onClick={() => handleDelete(pdf._id)}
-                      className="text-red-700 font-bold text-sm"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </div>
+      {/* DELETE */}
+      <button
+        onClick={() => handleDelete(pdf._id)}
+        className="
+          inline-flex items-center justify-center
+          px-3 py-1.5
+          text-xs font-bold
+          text-red-700 border border-red-600
+          rounded-full
+          hover:bg-red-600 hover:text-white
+          transition
+        "
+      >
+        Delete
+      </button>
+    </>
+  )}
+</div>
+
             </div>
           ))}
         </div>

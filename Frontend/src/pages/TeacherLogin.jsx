@@ -46,6 +46,10 @@ const TeacherLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       {/* COLUMN WRAPPER */}
       <div className="w-96">
+
+        <div className="text-sm font-bold text-2xl">
+          <p className="text-sm text-2xl ml-18 text-emerald-950">Welcome to MindVsYou Login Page</p>
+        </div>
         {/* FORM */}
         <form
           onSubmit={handleSubmit}

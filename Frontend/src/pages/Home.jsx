@@ -333,7 +333,7 @@ const Home = () => {
 
             {/* CTA */}
             <a
-              href="https://wa.me/7838782723?text=Hi%21"
+              href="https://wa.me/7084211247?text=Hi%21"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 inline-block bg-[#3c4852] hover:bg-[#2f3a42] text-white font-semibold px-6 py-3 rounded transition !no-underline"

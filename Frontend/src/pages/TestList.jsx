@@ -4,16 +4,16 @@ import axios from "axios";
 import isTeacher from "../../middleware/isTeacher";
 
 const TestList = () => {
-  const { classname, subject } = useParams();
+  const { classname, section, subject } = useParams();
   const [pdfs, setPdfs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const teacher = isTeacher(); // 👈 compute once
+  const teacher = isTeacher();
 
   const fetchTests = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/record/pdfs/test/${classname}/${subject}`
+        `${import.meta.env.VITE_API_BASE_URL}/record/pdfs/test/${classname}/${subject}`
       );
       setPdfs(res.data);
     } catch (err) {
@@ -28,16 +28,42 @@ const TestList = () => {
   }, [classname, subject]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this test paper?")) return;
+    if (!window.confirm("Are you sure you want to delete this PDF?")) return;
 
     try {
       await axios.delete(
-        `http://localhost:5000/record/pdf/test/${subject}/${id}`,
-        { withCredentials: true }
+        `${import.meta.env.VITE_API_BASE_URL}/pdf/${section}/${subject}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
       );
-      fetchTests(); // 🔁 refresh list
+      setPdfs((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
-      alert("Delete failed");
+      alert("Failed to delete PDF");
+    }
+  };
+
+  const handleEdit = async (id, title) => {
+    const newTitle = prompt("Enter new title", title);
+    if (!newTitle) return;
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/record/pdf/${section}/${subject}/${id}`,
+        { title: newTitle },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setPdfs((prev) =>
+        prev.map((p) => (p._id === id ? res.data : p))
+      );
+    } catch (err) {
       console.error(err);
     }
   };
@@ -47,67 +73,112 @@ const TestList = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="max-w-4xl mx-auto p-4">
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-2xl font-bold">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 className="text-lg sm:text-2xl font-bold leading-tight">
           {classname.toUpperCase()} – {subject.toUpperCase()} Test Papers
-        </p>
+        </h1>
 
         {teacher && (
           <Link
             to={`/record/test/${classname}/${subject}/upload`}
-            className="bg-red-900 text-white px-4 py-2 rounded !no-underline font-bold text-xs"
+            className="bg-red-900 text-white px-4 py-2 rounded text-xs font-bold text-center !no-underline"
           >
             Upload Test Paper
           </Link>
         )}
       </div>
 
-      {/* PDF LIST */}
+      {/* LIST */}
       {pdfs.length === 0 ? (
-        <p className="text-gray-600 text-sm font-bold ">No test papers uploaded yet.</p>
+        <p className="text-gray-600 text-sm font-bold">
+          No test papers uploaded yet.
+        </p>
       ) : (
-        <ul className="space-y-3">
-          {pdfs.map((pdf) => (
-            <li
-              key={pdf._id}
-              className="flex justify-between items-center border p-3 rounded"
+        <ul className="space-y-4">
+  {pdfs.map((pdf) => (
+    <li
+      key={pdf._id}
+      className="
+        bg-white
+        rounded-xl
+        border
+        shadow-sm
+        p-4
+        flex flex-col gap-4
+      "
+    >
+      {/* TITLE */}
+      <p className="text-sm font-semibold text-gray-800 break-words">
+        {pdf.title}
+      </p>
+
+      {/* ACTIONS */}
+      <div className="flex gap-2 flex-wrap">
+        {/* VIEW */}
+        <a
+          href={pdf.pdfUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="
+            flex-1 text-center
+            px-4 py-2
+            text-xs font-bold
+            text-blue-600
+            border border-blue-600
+            rounded-lg
+            
+            !no-underline
+          "
+        >
+          View
+        </a>
+
+        {teacher && (
+          <>
+            {/* EDIT */}
+            <button
+              onClick={() => handleEdit(pdf._id, pdf.title)}
+              className="
+                flex-1
+                px-4 py-2
+                text-xs font-bold
+                text-yellow-700
+                border border-yellow-500
+                rounded-lg
+                
+              "
             >
-              <span className="font-medium">{pdf.title}</span>
+              Edit
+            </button>
 
-              <div className="flex gap-4 items-center">
-                <Link
-                  to={`/record/view/${pdf._id}`}
-                  className="text-blue-600 font-semibold"
-                >
-                  View
-                </Link>
+            {/* DELETE */}
+            <button
+              onClick={() => handleDelete(pdf._id)}
+              className="
+                w-full
+                px-4 py-2
+                text-xs font-bold
+                text-red-700
+                border border-red-600
+                rounded-lg
+                
+              "
+            >
+              Delete
+            </button>
+          </>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
 
-                {teacher && (
-                  <>
-                    <Link
-                      to={`/record/edit/${pdf._id}`}
-                      className="text-green-600 font-semibold"
-                    >
-                      Edit
-                    </Link>
-
-                    <button
-                      onClick={() => handleDelete(pdf._id)}
-                      className="text-red-600 font-semibold"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
       )}
     </div>
   );
 };
 
 export default TestList;
+

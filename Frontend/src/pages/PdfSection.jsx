@@ -131,51 +131,51 @@ const [pdfs, setPdfs] = useState({});
             </Link>
           )}
 
-          {pdfs[subject].length === 0 ? (
-            <p className="text-gray-500 text-xs font-bold mt-2 ml-4">
-              No PDFs uploaded yet
-            </p>
-          ) : (
-            pdfs[subject].map((pdf) => (
-              <div
-                key={pdf._id}
-                className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2 md:gap-4 p-3 border-b"
-              >
-                {/* PDF TITLE */}
-                <p className="font-bold text-sm break-words">{pdf.title}</p>
+          {(pdfs[subject] || []).length === 0 ? (
+  <p className="text-gray-500 text-xs font-bold mt-2 ml-4">
+    No PDFs uploaded yet
+  </p>
+) : (
+  (pdfs[subject] || []).map((pdf) => (
+    <div
+      key={pdf._id}
+      className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2 md:gap-4 p-3 border-b"
+    >
+      <p className="font-bold text-sm break-words">{pdf.title}</p>
 
-                {/* ACTIONS */}
-                <div className="flex gap-4 md:gap-3 md:justify-end">
-                  <a
-                    href={pdf.pdfUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="!no-underline font-bold text-xs text-blue-600 px-2 py-1"
-                  >
-                    View
-                  </a>
+      <div className="flex gap-3 text-xs font-bold">
+                        <a
+                          href={pdf.pdfUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-600 !no-underline"
+                        >
+                          View
+                        </a>
 
-                  {isTeacher() && (
-                    <>
-                      <button
-                        className="font-bold text-xs text-yellow-700 px-2 py-1"
-                        onClick={() => handleEdit(pdf, subject)}
-                      >
-                        Edit
-                      </button>
+                        {isTeacher && (
+                          <>
+                            <button
+                              onClick={() => handleEdit(pdf, key)}
+                              className="text-yellow-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDelete(pdf._id, key)
+                              }
+                              className="text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+  ))
+)}
 
-                      <button
-                        className="font-bold text-xs text-red-700 px-2 py-1"
-                        onClick={() => handleDelete(pdf._id, subject)}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
         </div>
       )}
     </div>

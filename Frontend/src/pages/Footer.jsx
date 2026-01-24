@@ -31,7 +31,7 @@ const Footer = () => {
             {/* App Buttons */}
             <div className="mt-4 flex gap-3">
               <a
-                href="https://wa.me/7905574323?text=Hi%21"
+                href="https://wa.me/7084211247?text=Hi%21"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="

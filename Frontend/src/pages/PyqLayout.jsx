@@ -138,11 +138,14 @@ const toggleYear = (yearKey) => {
         setSidebarOpen(false); // close sidebar on mobile
       }}
       className="
-        flex items-center gap-2
-        pl-2 py-1
-        text-blue-600 font-semibold
-        hover:text-green-600 transition
+         flex items-center gap-2
+        px-2 py-1 rounded
+        font-semibold
+        transition
         !no-underline
+        text-blue-600
+        hover:text-green-600
+        hover:bg-yellow-50
       "
     >
       {isOpen ? (
@@ -173,9 +176,28 @@ const toggleYear = (yearKey) => {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-3 sm:p-4 md:p-6">
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 min-h-full">
-          <Outlet />
+      <main className="flex-1 p-3 sm:p-4 md:p-6 flex">
+        <div className="relative bg-white rounded-xl shadow-sm p-4 md:p-6 flex-1 overflow-hidden">
+      
+          {/* FADED LOGO (BACKGROUND) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <img
+              src="/mindvsyou-logo.JPG"
+              alt="Logo"
+              className="
+                w-40 sm:w-52 md:w-64
+                opacity-10
+                grayscale
+                select-none
+              "
+            />
+          </div>
+      
+          {/* ACTUAL CONTENT */}
+          <div className="relative z-10">
+            <Outlet />
+          </div>
+      
         </div>
       </main>
     </div>

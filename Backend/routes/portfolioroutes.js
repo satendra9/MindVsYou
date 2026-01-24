@@ -89,6 +89,8 @@ router.post("/contactdata", async (req, res) => {
   }
 });
 
+
+
 router.post(
   "/upload/:section/:subject",
   authMiddleware,
@@ -102,7 +104,12 @@ router.post(
         return res.status(400).json({ message: "PDF file not received" });
       }
 
-      const folderName = `pdfs/${section}/${subject}`;
+      const normalize = (v = "") => v.replace(/\s+/g, "").toLowerCase();
+
+      const normalizedSection = normalize(section);
+      const normalizedSubject = normalize(subject);
+
+      const folderName = `pdfs/${normalizedSection}/${normalizedSubject}`;
 
       const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "raw",
@@ -113,17 +120,18 @@ router.post(
         title: req.body.title,
         pdfUrl: result.secure_url,
         publicId: result.public_id,
-        section,
-        subject,
-        classname: null,
+        section: normalizedSection,   // class12th / class10th
+        subject: normalizedSubject,
       });
 
       res.status(201).json(pdf);
     } catch (err) {
+      console.error("SECTION UPLOAD ERROR:", err);
       res.status(500).json({ message: err.message });
     }
   }
 );
+
 
 router.post(
   "/upload/pyq/:classname/:subject/:year",
@@ -174,7 +182,7 @@ router.post(
 );
 
   router.post(
-  "/upload/test/:classname/:subject/:year",
+  "/upload/test/:classname/:subject",
   authMiddleware,
   isTeacher,
   upload.single("pdf"),
@@ -286,12 +294,6 @@ router.delete("/pdf/:section/:subject/:id", authMiddleware, isTeacher, async (re
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-/* 🔹 Get All PDFs */
-router.get("/pdfs", async (req, res) => {
-  const pdfs = await Pdf.find().sort({ createdAt: -1 });
-  res.json(pdfs);
 });
 
 /* 🔹 Update PDF Title */

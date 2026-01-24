@@ -33,11 +33,11 @@ const UploadPdf = () => {
 
     if (isPyq) {
   // year is REQUIRED only for PYQ
-    uploadUrl = `http://localhost:5000/record/upload/pyq/${classname}/${subject}/${year}`;
+    uploadUrl = `${import.meta.env.VITE_API_BASE_URL}/record/upload/pyq/${classname}/${subject}/${year}`;
     } else if (isTest) {
-    uploadUrl = `http://localhost:5000/record/upload/test/${classname}/${subject}`;
+    uploadUrl = `${import.meta.env.VITE_API_BASE_URL}/record/upload/test/${classname}/${subject}`;
     } else {
-    uploadUrl = `http://localhost:5000/record/upload/${section}/${subject}`;
+    uploadUrl = `${import.meta.env.VITE_API_BASE_URL}/record/upload/${section}/${subject}`;
     }
 
 

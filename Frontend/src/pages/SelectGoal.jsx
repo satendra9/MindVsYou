@@ -15,7 +15,7 @@ const fetchGoals = async (query = "") => {
   try {
     if (isFirstLoad) setLoading(true);
     const res = await axios.get(
-      `http://localhost:5000/record/goals?search=${query}`
+      `${import.meta.env.VITE_API_BASE_URL}/record/goals?search=${query}`
     );
     setGoals(res.data);
   } catch (err) {

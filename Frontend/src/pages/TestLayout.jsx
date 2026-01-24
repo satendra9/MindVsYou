@@ -28,6 +28,13 @@ const TestLayout = () => {
     }
   }, [classname]);
 
+    useEffect(() => {
+    // auto open sidebar on mobile
+    if (window.innerWidth < 768) {
+      setSidebarOpen(true);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       
@@ -146,11 +153,32 @@ const TestLayout = () => {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-3 sm:p-4 md:p-6 flex">
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 flex-1">
-          <Outlet />
-        </div>
-      </main>
+      {/* MAIN CONTENT */}
+<main className="flex-1 p-3 sm:p-4 md:p-6 flex">
+  <div className="relative bg-white rounded-xl shadow-sm p-4 md:p-6 flex-1 overflow-hidden">
+
+    {/* FADED LOGO (BACKGROUND) */}
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <img
+        src="/mindvsyou-logo.JPG"
+        alt="Logo"
+        className="
+          w-40 sm:w-52 md:w-64
+          opacity-10
+          grayscale
+          select-none
+        "
+      />
+    </div>
+
+    {/* ACTUAL CONTENT */}
+    <div className="relative z-10">
+      <Outlet />
+    </div>
+
+  </div>
+</main>
+
     </div>
   );
 };
