@@ -99,79 +99,47 @@ const TestList = () => {
         <ul className="space-y-4">
   {pdfs.map((pdf) => (
     <li
-      key={pdf._id}
-      className="
-        bg-white
-        rounded-xl
-        border
-        shadow-sm
-        p-4
-        flex flex-col gap-4
-      "
+  key={pdf._id}
+  className="border-b py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+>
+  {/* TITLE */}
+  <p className="text-sm font-bold text-gray-800 break-words">
+    {pdf.title}
+  </p>
+
+  {/* ACTIONS */}
+  <div className="flex items-center gap-4 text-xs font-bold">
+    {/* VIEW — everyone */}
+    <a
+      href={pdf.pdfUrl}
+      target="_blank"
+      rel="noreferrer"
+      className="text-blue-600 !no-underline hover:underline"
     >
-      {/* TITLE */}
-      <p className="text-sm font-semibold text-gray-800 break-words">
-        {pdf.title}
-      </p>
+      View
+    </a>
 
-      {/* ACTIONS */}
-      <div className="flex gap-2 flex-wrap">
-        {/* VIEW */}
-        <a
-          href={pdf.pdfUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="
-            flex-1 text-center
-            px-4 py-2
-            text-xs font-bold
-            text-blue-600
-            border border-blue-600
-            rounded-lg
-            
-            !no-underline
-          "
+    {/* EDIT / DELETE — teacher only */}
+    {teacher && (
+      <>
+        <button
+          onClick={() => handleEdit(pdf._id, pdf.title)}
+          className="text-yellow-700 hover:underline"
         >
-          View
-        </a>
+          Edit
+        </button>
 
-        {teacher && (
-          <>
-            {/* EDIT */}
-            <button
-              onClick={() => handleEdit(pdf._id, pdf.title)}
-              className="
-                flex-1
-                px-4 py-2
-                text-xs font-bold
-                text-yellow-700
-                border border-yellow-500
-                rounded-lg
-                
-              "
-            >
-              Edit
-            </button>
+        <button
+          onClick={() => handleDelete(pdf._id)}
+          className="text-red-700 hover:underline"
+        >
+          Delete
+        </button>
+      </>
+    )}
+  </div>
+</li>
 
-            {/* DELETE */}
-            <button
-              onClick={() => handleDelete(pdf._id)}
-              className="
-                w-full
-                px-4 py-2
-                text-xs font-bold
-                text-red-700
-                border border-red-600
-                rounded-lg
-                
-              "
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </div>
-    </li>
   ))}
 </ul>
 

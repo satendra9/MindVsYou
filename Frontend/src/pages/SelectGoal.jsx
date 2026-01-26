@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const SelectGoal = () => {
   const [goals, setGoals] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Fetch goals dynamically
  const [isFirstLoad, setIsFirstLoad] = useState(true);

@@ -121,6 +121,24 @@ const [pdfs, setPdfs] = useState({});
 
       {openSubject === subject && (
         <div className="px-4 pb-4 space-y-3">
+          {/* 🔐 PAID E-NOTES (Students + Teachers) */}
+    <Link
+      to={`/chapters/${section}/${subject}`}
+      className="
+        inline-block
+        bg-blue-50
+        border border-blue-300
+        text-blue-700
+        px-4 py-2
+        rounded
+        text-xs font-bold
+        !no-underline
+        hover:bg-blue-100
+      "
+    >
+      📘 E-Notes (Chapter-wise)
+    </Link>
+    
           {isTeacher() && (
             <Link
               to={`/record/${section}/${subject}/upload`}
@@ -138,41 +156,45 @@ const [pdfs, setPdfs] = useState({});
 ) : (
   (pdfs[subject] || []).map((pdf) => (
     <div
-      key={pdf._id}
-      className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-2 md:gap-4 p-3 border-b"
+  key={pdf._id}
+  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 py-3 border-b"
+>
+  {/* PDF Title */}
+  <p className="font-bold text-sm text-gray-800 break-words">
+    {pdf.title}
+  </p>
+
+  {/* Action buttons */}
+  <div className="flex items-center gap-4 text-xs font-bold">
+    <a
+      href={pdf.pdfUrl}
+      target="_blank"
+      rel="noreferrer"
+      className="text-blue-600 !no-underline hover:underline"
     >
-      <p className="font-bold text-sm break-words">{pdf.title}</p>
+      View
+    </a>
 
-      <div className="flex gap-3 text-xs font-bold">
-                        <a
-                          href={pdf.pdfUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 !no-underline"
-                        >
-                          View
-                        </a>
+    {isTeacher() && (
+      <>
+        <button
+          onClick={() => handleEdit(pdf, subject)}
+          className="text-yellow-700 hover:underline"
+        >
+          Edit
+        </button>
 
-                        {isTeacher && (
-                          <>
-                            <button
-                              onClick={() => handleEdit(pdf, key)}
-                              className="text-yellow-700"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDelete(pdf._id, key)
-                              }
-                              className="text-red-700"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
+        <button
+          onClick={() => handleDelete(pdf._id, subject)}
+          className="text-red-700 hover:underline"
+        >
+          Delete
+        </button>
+      </>
+    )}
+  </div>
+</div>
+
   ))
 )}
 
