@@ -67,4 +67,5 @@ router.get("/teacher/dashboard", authMiddleware, (req, res) => {
   res.json({ message: "Welcome Teacher" });
 });
 
+
 export default router;

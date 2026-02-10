@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { PORT, MONGO_URL } from "./config.js";
 import EmailRoute from "./routes/portfolioroutes.js"
 import AuthRoute from "./routes/authroutes.js"
+import userRoute from "./routes/userRoutes.js"
 import chapterRoutes from "./routes/chapterRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
 import cors from 'cors';
@@ -40,6 +41,7 @@ app.use(
 
 app.use("/record", EmailRoute);
 app.use("/api/auth", AuthRoute);
+app.use("/api/auth", userRoute);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/payments", paymentRoutes);
 

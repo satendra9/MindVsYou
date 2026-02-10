@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { User } from "lucide-react";
+import isUser from "../../middleware/isUser.js";
 import isTeacher from "../../middleware/isTeacher.js";
 import { logout } from "../pages/logout.jsx";
 import { Search } from "lucide-react";
@@ -17,6 +18,7 @@ import GetAppSection from "./GetAppSection.jsx";
 import StartLearningSection from "./StartLearningSection.jsx";
 import Footer from "./Footer.jsx";
 import { Menu, X } from "lucide-react";
+
 
 const Home = () => {
   const [email, setEmail] = useState("");
@@ -137,7 +139,28 @@ const Home = () => {
                   Blogs
                 </Link>
               </li>
-
+               <li>
+                {isUser() ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="text-black font-semibold text-left"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    to="/api/auth/user-login"
+                    className="border border-black rounded px-3 py-2 text-black w-fit !no-underline"
+                  >
+                    User Login
+                  </Link>
+                )}
+              </li>
+              <li></li>
               <li>
                 {isTeacher() ? (
                   <button
@@ -201,7 +224,27 @@ const Home = () => {
                   Blogs
                 </Link>
               </li>
-
+              <li>
+                {isUser() ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="text-black font-semibold text-left"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    to="/api/auth/user-login"
+                    className="border border-black rounded px-3 py-2 text-black w-fit"
+                  >
+                    User Login
+                  </Link>
+                )}
+              </li>
               <li>
                 {isTeacher() ? (
                   <button

@@ -1,10 +1,19 @@
+// models/Purchase.js
 import mongoose from "mongoose";
 
 const purchaseSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  chapterId: mongoose.Schema.Types.ObjectId,
-  expiresAt: Date,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",          // 🔥 THIS IS THE CONNECTION
+    required: true,
+  },
+  chapterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Chapter",
+    required: true,
+  },
   paymentId: String,
-});
+  expiresAt: Date,
+}, { timestamps: true });
 
 export default mongoose.model("Purchase", purchaseSchema);

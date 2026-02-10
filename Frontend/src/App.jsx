@@ -21,11 +21,16 @@ import PyqLayout from "./pages/PyqLayout.jsx";
 import PyqList from "./pages/PyqList.jsx";
 import TestLayout from "./pages/TestLayout.jsx";
 import TestList from "./pages/TestList.jsx";
+import ChapterList from "./pages/ChapterList.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import "./App.css";
+import UserLogin from "./pages/UserLogin.jsx";
+import UserRegister from "./pages/UserRegister.jsx";
+import UserRouting from "../src/pages/UserRouting.jsx"
 
 
 function App() {
@@ -45,8 +50,11 @@ function App() {
   <Route path="/record/policy" element={<PrivacyPolicy />} />
 
   {/* ===== AUTH ===== */}
+  <Route path="/api/auth/user-login" element={<UserLogin />} />
+  <Route path="/api/auth/user-register" element={<UserRegister />} />
   <Route path="/api/auth/teacher-login" element={<TeacherLogin />} />
   <Route path="/api/auth/teacher-register" element={<TeacherRegister />} />
+
 
   {/* ===== PYQ ROUTES ===== */}
   <Route path="/record/pyq" element={<PyqLayout />}>
@@ -83,6 +91,18 @@ function App() {
       </TeacherRouting>
     }
   />
+
+  {/* ===== CHAPTER NOTES ROUTE ===== */}
+<Route
+  path="/chapters/:section/:subject"
+  element={<ChapterList />}
+/>
+
+{/* ===== PAYMENT SUCCESS ===== */}
+<Route
+  path="/payment-success"
+  element={<PaymentSuccess />}
+/>
 
   {/* 🚨 GENERIC ROUTE — MUST BE LAST */}
   <Route path="/record/:section" element={<PdfSection />} />

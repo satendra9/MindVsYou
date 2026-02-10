@@ -6,12 +6,7 @@ import authMiddleware from "../middleware/middleware.js";
 const router = express.Router();
 
 /* Get chapters */
-router.get("/:section/:subject", async (req, res) => {
-  const chapters = await Chapter.find(req.params);
-  res.json(chapters);
-});
-
-/* Check access */
+/* Check access — MUST COME FIRST */
 router.get("/access/:chapterId", authMiddleware, async (req, res) => {
   const purchase = await Purchase.findOne({
     userId: req.user.id,
@@ -19,10 +14,19 @@ router.get("/access/:chapterId", authMiddleware, async (req, res) => {
     expiresAt: { $gt: new Date() },
   });
 
-  if (!purchase) return res.status(403).json({ message: "No access" });
+  if (!purchase) {
+    return res.status(403).json({ message: "No access" });
+  }
 
   const chapter = await Chapter.findById(req.params.chapterId);
   res.json({ driveLink: chapter.driveLink });
+});
+
+/* Get chapters — ALWAYS LAST */
+router.get("/:section/:subject", async (req, res) => {
+  const { section, subject } = req.params;
+  const chapters = await Chapter.find({ section, subject });
+  res.json(chapters);
 });
 
 export default router;
