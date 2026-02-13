@@ -19,7 +19,7 @@ const ChapterList = () => {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/${section}/${subject}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/chapters/${section}/${subject}`)
       .then((res) => setChapters(res.data))
       .catch(console.error);
   }, [section, subject]);
