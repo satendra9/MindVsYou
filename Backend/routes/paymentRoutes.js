@@ -20,29 +20,26 @@ const razorpay = new Razorpay({
 
 // 1️⃣ Create order
 router.post("/create-order", async (req, res) => {
-  const { userId, chapterId, amount } = req.body;
+  const { chapterId, amount } = req.body;
 
-  if (!userId || !chapterId || !amount) {
+  if (!chapterId || !amount) {
     return res.status(400).json({ error: "Missing data" });
   }
 
-  await PendingPurchase.create({ userId, chapterId });
-
   const options = {
-  amount: amount * 100,
-  currency: "INR",
-  receipt: `receipt_${Date.now()}`,
-  notes: {
-    userId,
-    chapterId,
-  },
-};
-
+    amount: amount * 100,
+    currency: "INR",
+    receipt: `receipt_${Date.now()}`,
+    notes: {
+      chapterId,
+    },
+  };
 
   const order = await razorpay.orders.create(options);
 
-  res.json(order); // send order info to frontend
+  res.json(order);
 });
+
 
 // 2️⃣ Verify payment & save purchase
 router.post("/verify", async (req, res) => {
@@ -51,7 +48,7 @@ router.post("/verify", async (req, res) => {
     razorpay_order_id,
     razorpay_signature,
     chapterId,
-    userId,
+    buyerEmail,  // 👈 coming from frontend
   } = req.body;
 
   const generated_signature = crypto
@@ -63,39 +60,32 @@ router.post("/verify", async (req, res) => {
     return res.status(400).json({ error: "Invalid signature" });
   }
 
-  const chapter = await Chapter.findById(chapterId);
-  const user = await User.findById(userId);
+  try {
+    if (!buyerEmail) {
+      return res.status(400).json({ error: "Email is required" });
+    }
 
-  // Save purchase
-  await Purchase.create({
-    userId,
-    chapterId,
-    paymentId: razorpay_payment_id,
-    expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-  });
+    const chapter = await Chapter.findById(chapterId);
 
-  await PendingPurchase.deleteOne({ userId, chapterId });
+    await sendMail({
+      to: buyerEmail,
+      subject: `Your ${chapter.title} Notes – MindvsYou Learning`,
+      html: purchaseMailTemplate({
+        name: buyerEmail.split("@")[0],
+        className: "Class 12",
+        subject: chapter.subject,
+        driveLink: chapter.driveLink,
+      }),
+    });
 
-  console.log("📩 Preparing to send email...");
-  console.log("User email:", user.email);
-  console.log("Drive link:", chapter.driveLink);
-
-
-  // 📧 SEND EMAIL
-  await sendMail({
-  to: user.email,
-  subject: `Your ${chapter.title} Notes – MindvsYou Learning`,
-  html: purchaseMailTemplate({
-    name: user.name,                 // "Gulshan"
-    className: "Class 12",
-    subject: chapter.subject,        // "Physics"
-    driveLink: chapter.driveLink,
-  }),
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 
-  res.json({ success: true });
-});
 
 
 // 3️⃣ Webhook (optional but recommended)

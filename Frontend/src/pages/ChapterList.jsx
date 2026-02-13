@@ -9,10 +9,17 @@ const ChapterList = () => {
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
   const token = sessionStorage.getItem("token");
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [pendingChapter, setPendingChapter] = useState(null);
+  const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/api/chapters/${section}/${subject}`)
+      .get(`http://localhost:5000/api/chapters/${section}/${subject}`)
       .then((res) => setChapters(res.data))
       .catch(console.error);
   }, [section, subject]);
@@ -21,7 +28,7 @@ const ChapterList = () => {
   const openNotes = async (chapter) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/chapters/access/${chapter._id}`,
+        `http://localhost:5000/api/chapters/access/${chapter._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,18 +46,34 @@ const ChapterList = () => {
 
   // 💳 Razorpay Payment
   const buyNow = async (chapter) => {
-    const userId = sessionStorage.getItem("userId");
-    const email = sessionStorage.getItem("email");
+  // Store selected chapter
+  setPendingChapter(chapter);
+  setShowEmailPopup(true);
+};
 
-    if (!userId) {
-      alert("Please login first");
-      return;
-    }
+const continuePayment = async () => {
+  setEmailError("");
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailInput) {
+    setEmailError("Email is required");
+    return;
+  }
+
+  if (!emailRegex.test(emailInput)) {
+    setEmailError("Please enter a valid email address");
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+
+    const chapter = pendingChapter;
 
     const { data: order } = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/api/payments/create-order`,
+      `http://localhost:5000/api/payments/create-order`,
       {
-        userId,
         chapterId: chapter._id,
         amount: chapter.price,
       }
@@ -61,32 +84,48 @@ const ChapterList = () => {
       amount: order.amount,
       currency: "INR",
       order_id: order.id,
-      name: "E-Notes",
+      name: "MindvsYou Learning",
       description: chapter.title,
+
       handler: async function (response) {
-        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/payments/verify`, {
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_signature: response.razorpay_signature,
-          chapterId: chapter._id,
-          userId,
-        });
+        await axios.post(
+          `http://localhost:5000/api/payments/verify`,
+          {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            chapterId: chapter._id,
+            buyerEmail: emailInput,
+          }
+        );
 
         navigate("/payment-success");
       },
-      prefill: {
-        email,
-      },
-      theme: {
-        color: "#2563eb",
-      },
+
+      prefill: { email: emailInput },
+      theme: { color: "#2563eb" },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
-  };
+
+    setShowEmailPopup(false);
+    setEmailInput("");
+
+  } catch (error) {
+    console.error(error);
+    setEmailError("Something went wrong. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
+
 
 return (
+  <>
   <div className="max-w-4xl mx-auto px-3 sm:px-4 py-5">
     {/* Header */}
     {/* Back to courses */}
@@ -187,9 +226,86 @@ return (
         Secure payments • Lifetime access • Teacher-made notes
       </p>
     </div>
+    
+      </div>
+      {showEmailPopup && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
+    <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-[fadeIn_.2s_ease-in-out]">
 
-    <Footer />
+      <h2 className="text-lg font-bold text-gray-800">
+        Enter your email
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-1">
+        We’ll send your purchased notes to this address.
+      </p>
+
+      <input
+  type="email"
+  placeholder="you@example.com"
+  value={emailInput}
+  onChange={(e) => {
+    setEmailInput(e.target.value);
+    setEmailError(""); // clear error while typing
+  }}
+  className={`w-full mt-4 px-4 py-2 border rounded-xl text-sm
+    focus:outline-none focus:ring-2
+    ${emailError 
+      ? "border-red-500 focus:ring-red-400" 
+      : "border-gray-300 focus:ring-blue-500"
+    }`}
+/>
+
+{emailError && (
+  <p className="text-red-500 text-xs mt-2 font-medium">
+    {emailError}
+  </p>
+)}
+
+
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          onClick={() => setShowEmailPopup(false)}
+          className="px-4 py-2 text-sm font-semibold rounded-xl 
+                     border border-gray-300 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+
+        <button
+  onClick={continuePayment}
+  disabled={
+    isLoading ||
+    !emailInput ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)
+  }
+  className={`px-5 py-2 text-sm font-bold rounded-xl
+    flex items-center justify-center gap-2
+    transition active:scale-95
+    ${
+      isLoading ||
+      !emailInput ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)
+        ? "bg-blue-300 cursor-not-allowed text-white"
+        : "bg-blue-600 hover:bg-blue-700 text-white"
+    }`}
+>
+  {isLoading && (
+    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  )}
+  
+  {isLoading ? "Processing..." : "Continue"}
+</button>
+      </div>
+    </div>
   </div>
+)}
+
+      <div>
+      <Footer />
+      </div>
+      </>
+    
 );
 
 

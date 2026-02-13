@@ -58,7 +58,7 @@ const Courses = () => {
                         Blogs
                       </Link>
                     </li>
-                     <li>
+                {/*     <li>
                       {isUser() ? (
                         <button
                           onClick={() => {
@@ -78,8 +78,8 @@ const Courses = () => {
                           User Login
                         </Link>
                       )}
-                    </li>
-                    <li></li>
+                    </li> */}
+                    
                     <li>
                       {isTeacher() ? (
                         <button
@@ -143,7 +143,7 @@ const Courses = () => {
                         Blogs
                       </Link>
                     </li>
-                    <li>
+                {/*    <li>
                       {isUser() ? (
                         <button
                           onClick={() => {
@@ -163,7 +163,7 @@ const Courses = () => {
                           User Login
                         </Link>
                       )}
-                    </li>
+                    </li> */}
                     <li>
                       {isTeacher() ? (
                         <button
