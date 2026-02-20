@@ -18,7 +18,7 @@ const ChapterList = () => {
 
   try {
     const res = await axios.get(
-      `http://localhost:5000/api/chapters/${section}/${subject}`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/chapters/${section}/${subject}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -41,7 +41,7 @@ const ChapterList = () => {
   const openNotes = async (chapter) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/chapters/access/${chapter._id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/chapters/access/${chapter._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const continuePayment = async () => {
 
     // 1️⃣ Create order
     const { data: order } = await axios.post(
-      `http://localhost:5000/api/payments/create-order`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/payments/create-order`,
       { chapterId: chapter._id },
       {
         headers: {
@@ -108,7 +108,7 @@ const continuePayment = async () => {
       handler: async function (response) {
         // 3️⃣ Verify payment
         await axios.post(
-          `http://localhost:5000/api/payments/verify`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/payments/verify`,
           {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
