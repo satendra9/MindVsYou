@@ -58,28 +58,19 @@ const ChapterList = () => {
   };
 
   // 💳 Razorpay Payment
-  const buyNow = (chapter) => {
+  const buyNow = async (chapter) => {
   if (!token) {
     navigate("/api/auth/user-login");
     return;
   }
 
-  setPendingChapter(chapter);
-  continuePayment();
-}
+  await continuePayment(chapter);
+};
 
-const continuePayment = async () => {
-  if (!token) {
-    navigate("/api/auth/user-login");
-    return;
-  }
-
+const continuePayment = async (chapter) => {
   try {
     setIsLoading(true);
 
-    const chapter = pendingChapter;
-
-    // 1️⃣ Create order
     const { data: order } = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/api/payments/create-order`,
       { chapterId: chapter._id },
@@ -91,12 +82,10 @@ const continuePayment = async () => {
     );
 
     if (order.freeMode) {
-  await fetchChapters();
-  return;
-}
+      await fetchChapters();
+      return;
+    }
 
-
-    // 2️⃣ Razorpay options
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
@@ -106,7 +95,6 @@ const continuePayment = async () => {
       description: chapter.title,
 
       handler: async function (response) {
-        // 3️⃣ Verify payment
         await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/api/payments/verify`,
           {
@@ -122,10 +110,7 @@ const continuePayment = async () => {
           }
         );
 
-        // Redirect back to chapter list
         await fetchChapters();
-        setPendingChapter(null);
-
       },
 
       theme: { color: "#2563eb" },
@@ -133,15 +118,11 @@ const continuePayment = async () => {
 
     const rzp = new window.Razorpay(options);
     rzp.open();
-
-    
-
   } catch (error) {
     console.error(error);
   } finally {
     setIsLoading(false);
   }
-  
 };
 
 
@@ -224,7 +205,7 @@ return (
         ) : (
           <>
             <button
-              onClick={() => buyNow(chapter._id)}
+              onClick={() => buyNow(chapter)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition"
             >
               Buy Now
