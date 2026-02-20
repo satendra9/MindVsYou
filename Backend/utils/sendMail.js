@@ -1,33 +1,18 @@
-import nodemailer from "nodemailer";
+import Brevo from "@getbrevo/brevo";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // App password (NOT normal gmail password)
-  },
-});
+const apiInstance = new Brevo.TransactionalEmailsApi();
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Mail server error:", error);
-  } else {
-    console.log("✅ Mail server is ready");
-  }
-});
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
-export const sendMail = async ({
-  to,
-  subject,
-  html,
-  attachments = [],
-}) => {
-  await transporter.sendMail({
-    from: `"MindvsYou Learning" <${process.env.EMAIL_USER}>`,
-    to,
+export const sendMail = async ({ to, subject, html }) => {
+  await apiInstance.sendTransacEmail({
+    sender: { email: "mindvsyou1@email.com", name: "MindvsYou Learning" },
+    to: [{ email: to }],
     subject,
-    html,
-    attachments,
+    htmlContent: html,
   });
 };
 

@@ -14,20 +14,18 @@ import cors from 'cors';
 
 
 const app = express();
-
 const allowedOrigins = [
   "http://localhost:5173",
   "https://www.mindvsyou.in",
   "https://mindvsyou.in"
-];
-
+]; 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (Postman, mobile apps)
+      // allow requests with no origin (like Postman, mobile apps)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {

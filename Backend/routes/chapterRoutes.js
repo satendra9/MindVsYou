@@ -2,6 +2,7 @@ import express from "express";
 import Chapter from "../models/Chapter.js";
 import Purchase from "../models/Purchase.js";
 import authMiddleware from "../middleware/middleware.js";
+import optionalAuth from "../middleware/optionalAuth.js";
 
 const router = express.Router();
 
@@ -23,10 +24,28 @@ router.get("/access/:chapterId", authMiddleware, async (req, res) => {
 });
 
 /* Get chapters — ALWAYS LAST */
-router.get("/:section/:subject", async (req, res) => {
+router.get("/:section/:subject", optionalAuth, async (req, res) => {
   const { section, subject } = req.params;
+
   const chapters = await Chapter.find({ section, subject });
-  res.json(chapters);
+
+  let purchasedIds = [];
+
+  if (req.user) {
+    const purchases = await Purchase.find({
+      userId: req.user.id,
+    });
+
+    purchasedIds = purchases.map(p => p.chapterId.toString());
+  }
+
+  const updatedChapters = chapters.map(ch => ({
+    ...ch.toObject(),
+    isPurchased: purchasedIds.includes(ch._id.toString()),
+  }));
+
+  res.json(updatedChapters);
 });
+
 
 export default router;

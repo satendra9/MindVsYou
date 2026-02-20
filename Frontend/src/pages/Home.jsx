@@ -139,7 +139,7 @@ const Home = () => {
                   Blogs
                 </Link>
               </li>
-              {/* <li>
+               <li>
                 {isUser() ? (
                   <button
                     onClick={() => {
@@ -159,7 +159,7 @@ const Home = () => {
                     User Login
                   </Link>
                 )}
-              </li> */}
+              </li> 
               <li></li>
               <li>
                 {isTeacher() ? (
@@ -224,7 +224,7 @@ const Home = () => {
                   Blogs
                 </Link>
               </li>
-           {/*}   <li>
+              <li>
                 {isUser() ? (
                   <button
                     onClick={() => {
@@ -244,7 +244,7 @@ const Home = () => {
                     User Login
                   </Link>
                 )}
-              </li> */}
+              </li> 
               <li>
                 {isTeacher() ? (
                   <button

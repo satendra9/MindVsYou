@@ -9,26 +9,39 @@ const ChapterList = () => {
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
   const token = sessionStorage.getItem("token");
-  const [showEmailPopup, setShowEmailPopup] = useState(false);
-  const [emailInput, setEmailInput] = useState("");
+  
   const [pendingChapter, setPendingChapter] = useState(null);
-  const [emailError, setEmailError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const fetchChapters = async () => {
+    console.log("Component Rendered");
 
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/api/chapters/${section}/${subject}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    console.log("Fetched Chapters:", res.data);
+
+    setChapters(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/api/chapters/${section}/${subject}`)
-      .then((res) => setChapters(res.data))
-      .catch(console.error);
-  }, [section, subject]);
+  fetchChapters();
+  console.log("useeffect running")
+}, [section, subject]);
 
   // 🔐 Try opening notes first
   const openNotes = async (chapter) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/chapters/access/${chapter._id}`,
+        `http://localhost:5000/api/chapters/access/${chapter._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,24 +58,19 @@ const ChapterList = () => {
   };
 
   // 💳 Razorpay Payment
-  const buyNow = async (chapter) => {
-  // Store selected chapter
-  setPendingChapter(chapter);
-  setShowEmailPopup(true);
-};
-
-const continuePayment = async () => {
-  setEmailError("");
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!emailInput) {
-    setEmailError("Email is required");
+  const buyNow = (chapter) => {
+  if (!token) {
+    navigate("/api/auth/user-login");
     return;
   }
 
-  if (!emailRegex.test(emailInput)) {
-    setEmailError("Please enter a valid email address");
+  setPendingChapter(chapter);
+  continuePayment();
+}
+
+const continuePayment = async () => {
+  if (!token) {
+    navigate("/api/auth/user-login");
     return;
   }
 
@@ -71,14 +79,24 @@ const continuePayment = async () => {
 
     const chapter = pendingChapter;
 
+    // 1️⃣ Create order
     const { data: order } = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/api/payments/create-order`,
+      `http://localhost:5000/api/payments/create-order`,
+      { chapterId: chapter._id },
       {
-        chapterId: chapter._id,
-        amount: chapter.price,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
 
+    if (order.freeMode) {
+  await fetchChapters();
+  return;
+}
+
+
+    // 2️⃣ Razorpay options
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
@@ -88,48 +106,53 @@ const continuePayment = async () => {
       description: chapter.title,
 
       handler: async function (response) {
+        // 3️⃣ Verify payment
         await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/api/payments/verify`,
+          `http://localhost:5000/api/payments/verify`,
           {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
             chapterId: chapter._id,
-            buyerEmail: emailInput,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
-        navigate("/payment-success");
+        // Redirect back to chapter list
+        await fetchChapters();
+        setPendingChapter(null);
+
       },
 
-      prefill: { email: emailInput },
       theme: { color: "#2563eb" },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
 
-    setShowEmailPopup(false);
-    setEmailInput("");
+    
 
   } catch (error) {
     console.error(error);
-    setEmailError("Something went wrong. Please try again.");
   } finally {
     setIsLoading(false);
   }
+  
 };
-
-
 
 
 
 return (
   <>
-  <div className="max-w-4xl mx-auto px-3 sm:px-4 py-5">
-    {/* Header */}
-    {/* Back to courses */}
-<Link
+   <div className="min-h-screen bg-gray-50 py-10 px-4">
+  <div className="max-w-4xl mx-auto">
+
+    <div className="mb-4">
+  <Link
   to="/record/courses"
   className="
     inline-flex items-center gap-1
@@ -141,84 +164,83 @@ return (
 >
   ← Back to Courses
 </Link>
+</div>
 
-    <h1 className="font-extrabold text-xl sm:text-2xl mb-1 text-gray-800">
-      {subject.toUpperCase()} E-Notes
-    </h1>
-    <p className="text-xs sm:text-sm text-gray-500 mb-5">
+
+    {/* Heading */}
+    <div className="mb-8">
+      <h1 className="font-extrabold text-xl sm:text-2xl mb-1 text-gray-800">
+        CHEMISTRY E-Notes
+      </h1>
+      <p className="text-xs sm:text-sm text-gray-500 mb-5">
       High-quality exam-oriented notes • Instant access after purchase
     </p>
-
-    {/* Chapter list */}
-    <div className="space-y-3 sm:space-y-4">
-      {chapters.map((ch, index) => (
-        <div
-          key={ch._id}
-          className="
-            flex flex-col gap-4
-            sm:flex-row sm:items-center sm:justify-between
-            border rounded-xl p-4 bg-white shadow-sm
-            hover:shadow-md hover:border-blue-500 transition
-          "
-        >
-          {/* LEFT */}
-          <div className="flex items-start gap-3">
-            {/* Serial */}
-            <div className="text-blue-600 font-extrabold text-base sm:text-lg shrink-0">
-              {String(index + 1).padStart(2, "0")}
-            </div>
-
-            {/* Title */}
-            <div>
-              <p className="font-bold text-gray-800 text-sm sm:text-base leading-snug">
-                {ch.title}
-              </p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                PDF Notes • Instant Download
-              </p>
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="flex items-center justify-between sm:justify-end gap-3">
-            {/* Price */}
-            <span className="text-green-600 font-bold text-sm sm:text-base">
-              ₹{ch.price}
-            </span>
-
-            {/* Buttons */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => buyNow(ch)}
-                className="
-                  bg-blue-600 text-white
-                  px-4 sm:px-5 py-2
-                  rounded-lg text-xs sm:text-sm font-bold
-                  hover:bg-blue-700 active:scale-95 transition
-                "
-              >
-                Buy Now
-              </button>
-
-              <button
-                onClick={() => openNotes(ch)}
-                className="
-                  border border-gray-300
-                  px-4 py-2
-                  rounded-lg text-xs sm:text-sm font-bold
-                  hover:bg-gray-100 transition
-                "
-              >
-                Preview
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
 
-    {/* Trust box */}
-    <div className="mt-8 sm:mt-10 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-5 text-center">
+    {/* Chapter Cards */}
+   <div className="space-y-6">
+  {chapters.map((chapter, index) => (
+    <div
+      key={chapter._id}
+      className="bg-white rounded-xl shadow-sm border p-6 flex items-center justify-between"
+    >
+      {/* Left Side */}
+      <div>
+        <div className="flex items-center gap-4">
+          <div className="text-blue-600 font-extrabold text-base sm:text-lg shrink-0 mb-3">
+              {String(index + 1).padStart(2, "0")}
+            </div>
+          <p className="font-bold text-gray-800 text-sm sm:text-base leading-snug">
+                {chapter.title}
+              </p>
+        </div>
+         <p className="text-xs text-gray-500 mt-0.5">
+                PDF Notes • Instant Download
+              </p>
+      </div>
+
+      {/* Right Side */}
+      <div className="flex items-center gap-4">
+        <span className="text-green-600 font-semibold text-lg">
+          ₹{chapter.price}
+        </span>
+
+        {chapter.isPurchased ? (
+          <>
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-md text-sm font-medium">
+              Paid
+            </span>
+
+            <a
+              href={chapter.driveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md 
+              font-bold transition !no-underline"
+            >
+              Download
+            </a>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => buyNow(chapter._id)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition"
+            >
+              Buy Now
+            </button>
+
+            
+          </>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+
+    {/* Trust Box */}
+     <div className="mt-8 sm:mt-10 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-5 text-center">
       <p className="font-bold text-blue-700 text-xs sm:text-sm">
         ✔ Trusted by 1000+ students
       </p>
@@ -226,87 +248,13 @@ return (
         Secure payments • Lifetime access • Teacher-made notes
       </p>
     </div>
-    
-      </div>
-      {showEmailPopup && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
-    <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-[fadeIn_.2s_ease-in-out]">
-
-      <h2 className="text-lg font-bold text-gray-800">
-        Enter your email
-      </h2>
-
-      <p className="text-sm text-gray-500 mt-1">
-        We’ll send your purchased notes to this address.
-      </p>
-
-      <input
-  type="email"
-  placeholder="you@example.com"
-  value={emailInput}
-  onChange={(e) => {
-    setEmailInput(e.target.value);
-    setEmailError(""); // clear error while typing
-  }}
-  className={`w-full mt-4 px-4 py-2 border rounded-xl text-sm
-    focus:outline-none focus:ring-2
-    ${emailError 
-      ? "border-red-500 focus:ring-red-400" 
-      : "border-gray-300 focus:ring-blue-500"
-    }`}
-/>
-
-{emailError && (
-  <p className="text-red-500 text-xs mt-2 font-medium">
-    {emailError}
-  </p>
-)}
-
-
-      <div className="flex justify-end gap-3 mt-6">
-        <button
-          onClick={() => setShowEmailPopup(false)}
-          className="px-4 py-2 text-sm font-semibold rounded-xl 
-                     border border-gray-300 hover:bg-gray-100"
-        >
-          Cancel
-        </button>
-
-        <button
-  onClick={continuePayment}
-  disabled={
-    isLoading ||
-    !emailInput ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)
-  }
-  className={`px-5 py-2 text-sm font-bold rounded-xl
-    flex items-center justify-center gap-2
-    transition active:scale-95
-    ${
-      isLoading ||
-      !emailInput ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)
-        ? "bg-blue-300 cursor-not-allowed text-white"
-        : "bg-blue-600 hover:bg-blue-700 text-white"
-    }`}
->
-  {isLoading && (
-    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-  )}
-  
-  {isLoading ? "Processing..." : "Continue"}
-</button>
-      </div>
-    </div>
   </div>
-)}
-
-      <div>
-      <Footer />
-      </div>
-      </>
-    
+</div>
+<Footer />
+  </>
 );
+
+
 
 
 };
