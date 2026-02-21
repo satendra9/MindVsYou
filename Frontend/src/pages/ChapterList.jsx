@@ -182,9 +182,11 @@ return (
 
       {/* Right Side */}
       <div className="flex items-center gap-4">
-        <span className="text-green-600 font-semibold text-lg">
-          ₹{chapter.price}
-        </span>
+      {!chapter.isPurchased && (
+      <span className="text-green-600 font-semibold text-lg">
+      ₹{chapter.price}
+      </span>
+)}
 
         {chapter.isPurchased ? (
           <>
